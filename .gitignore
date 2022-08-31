@@ -1,0 +1,9 @@
+test_code/
+NOTES
+.nextflow.log*
+.nextflow/
+work/
+germlineStructuralV_results
+samples.tsv
+*.tsv
+runInfo/
