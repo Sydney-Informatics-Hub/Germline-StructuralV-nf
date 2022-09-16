@@ -4,6 +4,10 @@ nextflow.enable.dsl=2
 
 // Import subworkflows to be run in the workflow
 // include { process } from './modules/'
+include { checkInputs } from './modules/check_cohort'
+//include { manta } from './modules/manta'
+include { smoove } from './modules/smoove' 
+include { tiddit } from './modules/tiddit'
 
 /// Print the header to screen when running the pipeline
 
@@ -42,11 +46,16 @@ log.info """\
 
 def helpMessage() {
     log.info"""
-  Usage:  nextflow run <PATH TO REPO>/myPipeline-nf <args> --outDir
+  Usage:  nextflow run main.nf --cohort --ref --mantaBED
 
   Required Arguments:
-	--cohort		Specify full path and name of sample
-				input file (tab separated).
+	--cohort		Full path and name of sample input file (tab separated).
+
+	--ref			Full path and name of reference genome (.fasta format).
+
+	--mantaBED		Limit Manta SV detection to genomic regions specified 
+				in this file (.bed.gz format).		
+
     """.stripIndent()
 }
 
@@ -57,7 +66,7 @@ workflow {
 // Show help message if --help is run or if any required params are not 
 // provided at runtime
 
-        if ( params.help ){
+        if ( params.help == true || params.ref == false || params.cohort == false ){
         // Invoke the help function above and exit
               helpMessage()
               exit 1
@@ -77,19 +86,19 @@ workflow {
 	// Split cohort file to collect info for each sample
         cohort = checkInputs.out
                         .splitCsv(header: true, sep:"\t")
-                        .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai)) }
+                        .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
 
 	// Manta  
-	manta(cohort)
+	//manta(cohort, params.ref, params.ref+'.fai')
 
 	// Smoove
-	smoove(cohort)
+	smoove(cohort, params.ref, params.ref+'.fai')
 
 	// TIDDIT 
-	tiddit(cohort)
+	tiddit(cohort, params.ref, params.ref+'.fai')
 
 	// Survivor
-	survivor(cohort)	
+	//survivor(cohort)	
 }}
 
 workflow.onComplete {
