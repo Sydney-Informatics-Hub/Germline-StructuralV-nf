@@ -3,21 +3,20 @@
 nextflow.enable.dsl=2
 
 // Import subworkflows to be run in the workflow
-// include { process } from './modules/'
 include { checkInputs } from './modules/check_cohort'
-//include { manta } from './modules/manta'
 include { smoove } from './modules/smoove' 
-include { tiddit } from './modules/tiddit'
+include { tiddit_sv } from './modules/tiddit'
+include { tiddit_cov } from './modules/tiddit'
+//include { manta } from './modules/manta'
 
-/// Print the header to screen when running the pipeline
-
+// Print the header to screen when running the pipeline
 log.info """\
 
-      =================================================
-      =================================================
-        G E R M L I N E  S T R U C T U R A L  V - n f  
-      =================================================
-      =================================================
+        =================================================
+        =================================================
+          G E R M L I N E  S T R U C T U R A L  V - n f  
+        =================================================
+        =================================================
 
     -._    _.--'"`'--._    _.--'"`'--._    _.--'"`'--._    _  
        '-:`.'|`|"':-.  '-:`.'|`|"':-.  '-:`.'|`|"':-.  '.` :    
@@ -27,7 +26,7 @@ log.info """\
             `-..,..-'       `-..,..-'       `-..,..-'       `       
 
 
-                   ~~~~ Version: 1.0 ~~~~
+                      ~~~~ Version: 1.0 ~~~~
  
 
  Created by the Sydney Informatics Hub, University of Sydney
@@ -42,19 +41,17 @@ log.info """\
  """
 
 // Help function 
-// This help function will be run if run command is incorrect/missing 
+// This help function will be run if essential part of run command is incorrect/missing 
 
 def helpMessage() {
     log.info"""
-  Usage:  nextflow run main.nf --cohort --ref --mantaBED
+  Usage:  nextflow run main.nf --cohort --ref 
 
   Required Arguments:
+
 	--cohort		Full path and name of sample input file (tab separated).
 
-	--ref			Full path and name of reference genome (.fasta format).
-
-	--mantaBED		Limit Manta SV detection to genomic regions specified 
-				in this file (.bed.gz format).		
+	--ref			  Full path and name of reference genome (.fasta format).
 
     """.stripIndent()
 }
@@ -94,10 +91,13 @@ workflow {
 	// Smoove
 	smoove(cohort, params.ref, params.ref+'.fai')
 
-	// TIDDIT 
-	tiddit(cohort, params.ref, params.ref+'.fai')
+	// TIDDIT sv
+	tiddit_sv(cohort, params.ref, params.ref+'.fai')
 
-	// Survivor
+  // TIDDIT cov 
+  tiddit_cov(cohort, params.ref, params.ref+'.fai')
+
+	// Survivor 
 	//survivor(cohort)	
 }}
 
