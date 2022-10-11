@@ -5,9 +5,9 @@ nextflow.enable.dsl=2
 // Import subworkflows to be run in the workflow
 include { checkInputs } from './modules/check_cohort'
 include { smoove } from './modules/smoove' 
+include { manta } from './modules/manta'
 include { tiddit_sv } from './modules/tiddit'
 include { tiddit_cov } from './modules/tiddit'
-//include { manta } from './modules/manta'
 
 // Print the header to screen when running the pipeline
 log.info """\
@@ -42,10 +42,11 @@ log.info """\
 
 // Help function 
 // This help function will be run if essential part of run command is incorrect/missing 
+// TODO: once finalised, add all optional and required flags in
 
 def helpMessage() {
     log.info"""
-  Usage:  nextflow run main.nf --cohort --ref 
+  Usage:  nextflow run main.nf --cohort <samplesheet.tsv> --ref <reference.fasta> 
 
   Required Arguments:
 
@@ -56,7 +57,8 @@ def helpMessage() {
     """.stripIndent()
 }
 
-/// Main workflow structure. Include some input/runtime tests here.
+/// Main workflow structure. 
+// TODO: include some input/runtime tests here.
 
 workflow {
 
@@ -77,7 +79,7 @@ workflow {
 // if none of the above are a problem, then run the workflow
 	} else {
 	
-	// Check inputs
+	// Check inputs file exists
 	checkInputs(Channel.fromPath(params.cohort, checkIfExists: true))
 	
 	// Split cohort file to collect info for each sample
@@ -85,20 +87,28 @@ workflow {
                         .splitCsv(header: true, sep:"\t")
                         .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
 
-	// Manta  
-	//manta(cohort, params.ref, params.ref+'.fai')
+	// Call SVs with Manta  
+	manta(cohort, params.ref, params.ref+'.fai')
 
-	// Smoove
+	// Call SVs with Smoove
 	smoove(cohort, params.ref, params.ref+'.fai')
 
-	// TIDDIT sv
+	// Run TIDDIT sv
 	tiddit_sv(cohort, params.ref, params.ref+'.fai')
 
-  // TIDDIT cov 
-  tiddit_cov(cohort, params.ref, params.ref+'.fai')
+	// Run TIDDIT cov 
+	tiddit_cov(cohort, params.ref, params.ref+'.fai')
 
-	// Survivor 
-	//survivor(cohort)	
+  // TODO Plot TIDDIT cov output/chromosome 
+  // tiddit_plot_cov()
+
+	// Merge VCFs with Jasmine 
+	//jasmine(cohort)	
+
+  // Genotype variants with 
+
+  // Print report 
+
 }}
 
 workflow.onComplete {

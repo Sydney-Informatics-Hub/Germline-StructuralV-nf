@@ -41,7 +41,7 @@ process tiddit_cov {
 	debug true
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
 
-	// resource parameters. Cannot scale
+	// resource parameters
     cpus 4
 
     // Run with container
@@ -66,3 +66,25 @@ process tiddit_cov {
 	"""
 
 }
+
+//TODO write Rscript to plot binned coverage across each chromosome 
+//process tiddit_plot_cov {
+
+	// resource parameters
+  //  cpus ${cpu}
+
+    // Run with container
+//	container "${params.tidyverse__container}"
+	
+//	input:
+//	tuple val(sampleID), file(covbed)
+
+//	output: 
+//	tuple val(sampleID), path("*.png")
+
+//	script:
+//	"""
+//	Rscript ./Scripts/tiddit_cov_plot.R ${covbed} ${covplot}.png 
+//	"""
+
+//}
