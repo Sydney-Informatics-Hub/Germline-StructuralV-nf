@@ -9,5 +9,5 @@ samples.tsv
 runInfo/
 results/
 Results/
-.vscode/extensions.json
+.vscode
 PIPE-2988_NOTES.md
