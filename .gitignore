@@ -1,4 +1,4 @@
-testScripts/
+test_code/
 NOTES
 .nextflow.log*
 .nextflow/
@@ -7,7 +7,3 @@ germlineStructuralV_results
 samples.tsv
 *.tsv
 runInfo/
-results/
-Results/
-.vscode/extensions.json
-PIPE-2988_NOTES.md
