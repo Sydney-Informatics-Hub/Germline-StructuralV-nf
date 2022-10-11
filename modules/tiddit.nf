@@ -3,22 +3,88 @@
 // Enable DSL-2 syntax
 nextflow.enable.dsl=2
 
-// Define the process
-process survivor_merge {
-	debug
-	publishDir
+// run tiddit structural variant detection
+process tiddit_sv {
+	debug true
+	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
 
-	// resource parameters. currently set to 4 CPUs
-        cpus "${params.cpus}"
+	// resource parameters. Cannot scale
+    cpus 4
 
-        // Run with container
+    // Run with container
 	container "${params.tiddit__container}"
 	
 	input:
-	
-	output:
+	tuple val(sampleID), file(bam), file(bai)
+	path(ref)
+	path(ref_fai)
 
+	output:
+	tuple val(sampleID), path("*.vcf")
+	tuple val(sampleID), path("*.ploidies.tab")
+	tuple val(sampleID), path("*_tiddit")
+	
 	script:
+	// will need to add option for additional flags. See manta script for example
 	"""
+	tiddit \
+	--sv \
+	--bam ${bam} \
+	--ref ${params.ref} \
+	-o ${sampleID}_sv \
+	--threads 2
 	"""
-} 
+}
+
+// calculate coverage of bam files 
+process tiddit_cov {
+	debug true
+	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
+
+	// resource parameters
+    cpus 4
+
+    // Run with container
+	container "${params.tiddit__container}"
+	
+	input:
+	tuple val(sampleID), file(bam), file(bai)
+	path(ref)
+	path(ref_fai)
+
+	output:
+	tuple val(sampleID), path("*.bed")
+	
+	script:
+	// will need to add option for additional flags. See manta script for example
+	"""
+	tiddit \
+	--cov \
+	--bam ${bam} \
+	--ref ${params.ref} \
+	-o ${sampleID}_cov \
+	"""
+
+}
+
+//TODO write Rscript to plot binned coverage across each chromosome 
+//process tiddit_plot_cov {
+
+	// resource parameters
+  //  cpus ${cpu}
+
+    // Run with container
+//	container "${params.tidyverse__container}"
+	
+//	input:
+//	tuple val(sampleID), file(covbed)
+
+//	output: 
+//	tuple val(sampleID), path("*.png")
+
+//	script:
+//	"""
+//	Rscript ./Scripts/tiddit_cov_plot.R ${covbed} ${covplot}.png 
+//	"""
+
+//}
