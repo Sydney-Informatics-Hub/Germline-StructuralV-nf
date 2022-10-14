@@ -3,11 +3,11 @@
 nextflow.enable.dsl=2
 
 // Import subworkflows to be run in the workflow
-include { checkInputs } from './modules/check_cohort'
-include { smoove } from './modules/smoove' 
-include { manta } from './modules/manta'
-include { tiddit_sv } from './modules/tiddit'
-include { tiddit_cov } from './modules/tiddit'
+include { checkInputs }         from './modules/check_cohort'
+include { smoove }              from './modules/smoove' 
+include { manta }               from './modules/manta'
+include { tiddit_sv }           from './modules/tiddit'
+include { tiddit_cov }          from './modules/tiddit'
 
 // Print the header to screen when running the pipeline
 log.info """\
@@ -46,11 +46,11 @@ log.info """\
 
 def helpMessage() {
     log.info"""
-  Usage:  nextflow run main.nf --cohort <samplesheet.tsv> --ref <reference.fasta> 
+  Usage:  nextflow run main.nf --input samplesheet.tsv --ref reference.fasta
 
   Required Arguments:
 
-	--cohort		Full path and name of sample input file (tab separated).
+	--input		Full path and name of sample input file (tab separated).
 
 	--ref			  Full path and name of reference genome (.fasta format).
 
@@ -65,7 +65,7 @@ workflow {
 // Show help message if --help is run or if any required params are not 
 // provided at runtime
 
-        if ( params.help == true || params.ref == false || params.cohort == false ){
+        if ( params.help == true || params.ref == false || params.input == false ){
         // Invoke the help function above and exit
               helpMessage()
               exit 1
@@ -80,37 +80,44 @@ workflow {
 	} else {
 	
 	// Check inputs file exists
-	checkInputs(Channel.fromPath(params.cohort, checkIfExists: true))
+	checkInputs(Channel.fromPath(params.input, checkIfExists: true))
 	
 	// Split cohort file to collect info for each sample
-        cohort = checkInputs.out
+        input = checkInputs.out
                         .splitCsv(header: true, sep:"\t")
                         .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
 
 	// Call SVs with Manta  
-	manta(cohort, params.ref, params.ref+'.fai')
-
+	manta(input, params.ref, params.ref+'.fai')
+  
 	// Call SVs with Smoove
-	smoove(cohort, params.ref, params.ref+'.fai')
+	smoove(input, params.ref, params.ref+'.fai')
 
 	// Run TIDDIT sv
-	tiddit_sv(cohort, params.ref, params.ref+'.fai')
+	tiddit_sv(input, params.ref, params.ref+'.fai')
 
 	// Run TIDDIT cov 
-	tiddit_cov(cohort, params.ref, params.ref+'.fai')
+	tiddit_cov(input, params.ref, params.ref+'.fai')
+  
+  // Run SURVIVOR merge vcfs
+  
 
-  // TODO Plot TIDDIT cov output/chromosome 
-  // tiddit_plot_cov()
-
-	// Merge VCFs with Jasmine 
-	//jasmine(cohort)	
-
-  // Genotype variants with 
-
+  // Genotype variants 
   // Print report 
-
 }}
 
 workflow.onComplete {
-	log.info ( workflow.success ? "\nDone! Outputs are in `${params.outDir}`" : "Oops .. something went wrong" )
+  summary = """
+  Workflow execution summary
+  =====================================
+  Duration    : ${workflow.duration}
+  Success     : ${workflow.success}
+  workDir     : ${workflow.workDir}
+  Exit status : ${workflow.exitStatus}
+  outDir      : ${params.outDir}
+  ======================================
+    """
+
+  println summary
+
 }

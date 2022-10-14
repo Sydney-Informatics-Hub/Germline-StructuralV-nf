@@ -13,7 +13,7 @@ process manta {
     cpus "${params.cpus}"
 
     // Run with container
-	container "${params.manta__container}"
+	container "${params.mulled__container}"
 	
 	input:
 	 // matching the target bed with the sample tuple to parallelise sample runs across bed file
@@ -22,7 +22,12 @@ process manta {
 	path(ref_fai)
 
 	output:
-	tuple val(sampleID), path("*")
+	path("manta/*.candidateSmallIndels.vcf.gz")    , emit: small_indels
+    path("manta/*.candidateSmallIndels.vcf.gz.tbi"), emit: small_indels_tbi
+    path("manta/*.candidateSV.vcf.gz")             , emit: candidate
+    path("manta/*.candidateSV.vcf.gz.tbi")         , emit: candidate_tbi
+    path("manta/*.diploidSV.vcf.gz")               , emit: diploid
+    path("manta/*.diploidSV.vcf.gz.tbi")           , emit: diploid_tbi
 
 	script:
 	// define custom function for optional use of target regions bed 
@@ -31,20 +36,39 @@ process manta {
 	
 	"""
 	# configure manta SV analysis workflow
-	configManta.py \\
-	--normalBam ${bam} \\
-	--referenceFasta ${params.ref} \\
-	--runDir manta \\
+		configManta.py \\
+		--normalBam ${bam} \\
+		--referenceFasta ${params.ref} \\
+		--runDir manta \\
 	
 	# run SV detection 
 	manta/runWorkflow.py -m local -j ${params.cpus}
-	
-	# clean up outputs, put them all in one place for each sample
-	mv manta/results/variants/candidateSmallIndels.vcf.gz manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz
-	mv manta/results/variants/candidateSmallIndels.vcf.gz.tbi manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi
-	mv manta/results/variants/candidateSV.vcf.gz manta/Manta_${sampleID}.candidateSV.vcf.gz
-	mv manta/results/variants/candidateSV.vcf.gz.tbi manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi
-	mv manta/results/variants/diploidSV.vcf.gz manta/Manta_${sampleID}.diploidSV.vcf.gz
-	mv manta/results/variants/diploidSV.vcf.gz.tbi manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi
+
+	# convert multiline inversion BNDs from manta vcf to single line
+	convertInversion.py \$(which samtools) ${params.ref} manta/results/variants/diploidSV.vcf.gz \
+		| bgzip --threads ${params.cpus} > manta/results/variants/diploid_converted.vcf.gz
+    
+	# index vcf
+	tabix manta/results/variants/diploid_converted.vcf.gz
+
+	# clean up outputs
+	mv manta/results/variants/candidateSmallIndels.vcf.gz \
+		manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz
+	mv manta/results/variants/candidateSmallIndels.vcf.gz.tbi \
+		manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi
+	mv manta/results/variants/candidateSV.vcf.gz \
+		manta/Manta_${sampleID}.candidateSV.vcf.gz
+	mv manta/results/variants/candidateSV.vcf.gz.tbi \
+		manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi
+	mv manta/results/variants/diploidSV.vcf.gz \
+		manta/Manta_${sampleID}.diploidSV.vcf.gz
+	mv manta/results/variants/diploidSV.vcf.gz.tbi \
+		manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi
+	mv manta/results/variants/diploid_converted.vcf.gz \
+		manta/Manta_${sampleID}.diploid_converted.vcf.gz
+	mv manta/results/variants/diploid_converted.vcf.gz.tbi \
+		manta/Manta_${sampleID}.diploid_converted.vcf.gz.tbi
+		
+	rm -rf manta/results/variants
 	"""
 } 
