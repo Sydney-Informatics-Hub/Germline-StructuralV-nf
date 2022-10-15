@@ -8,9 +8,6 @@ process tiddit_sv {
 	debug true
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
 
-	// resource parameters. Cannot scale
-    cpus 4
-
     // Run with container
 	container "${params.tiddit__container}"
 	
@@ -20,9 +17,9 @@ process tiddit_sv {
 	path(ref_fai)
 
 	output:
-	tuple val(sampleID), path("*.vcf")
-	tuple val(sampleID), path("*.ploidies.tab")
-	tuple val(sampleID), path("*_tiddit")
+	path("*_sv.vcf"), 			emit: tiddit_vcf
+	path("*.ploidies.tab"), 	emit: tiddit_ploidy
+	path("*_tiddit"), 			emit: tiddit_workdir
 	
 	script:
 	// will need to add option for additional flags. See manta script for example
@@ -32,7 +29,10 @@ process tiddit_sv {
 	--bam ${bam} \
 	--ref ${params.ref} \
 	-o ${sampleID}_sv \
-	--threads 2
+	--threads ${task.cpus}
+
+	mv ${sampleID}_sv.vcf \
+		Tiddit_${sampleID}_sv.vcf
 	"""
 }
 
@@ -40,9 +40,6 @@ process tiddit_sv {
 process tiddit_cov {
 	debug true
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
-
-	// resource parameters
-    cpus 4
 
     // Run with container
 	container "${params.tiddit__container}"
@@ -66,25 +63,3 @@ process tiddit_cov {
 	"""
 
 }
-
-//TODO write Rscript to plot binned coverage across each chromosome 
-//process tiddit_plot_cov {
-
-	// resource parameters
-  //  cpus ${cpu}
-
-    // Run with container
-//	container "${params.tidyverse__container}"
-	
-//	input:
-//	tuple val(sampleID), file(covbed)
-
-//	output: 
-//	tuple val(sampleID), path("*.png")
-
-//	script:
-//	"""
-//	Rscript ./Scripts/tiddit_cov_plot.R ${covbed} ${covplot}.png 
-//	"""
-
-//}

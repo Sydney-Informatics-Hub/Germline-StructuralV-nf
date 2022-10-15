@@ -88,8 +88,8 @@ workflow {
                         .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
 
 	// Call SVs with Manta  
-	manta(input, params.ref, params.ref+'.fai')
-  
+	//manta(input, params.mantaBED, params.mantaBED_tbi, params.ref, params.ref+'.fai')
+  manta(input, params.ref, params.ref+'.fai')
 	// Call SVs with Smoove
 	smoove(input, params.ref, params.ref+'.fai')
 
@@ -100,7 +100,7 @@ workflow {
 	tiddit_cov(input, params.ref, params.ref+'.fai')
   
   // Run SURVIVOR merge vcfs
-  
+
 
   // Genotype variants 
   // Print report 

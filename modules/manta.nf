@@ -6,11 +6,8 @@ nextflow.enable.dsl=2
 // Define the process
 process manta {
 	debug true
-	// unlike other processes, manta makes its own workdir, no need to specify full outDir path for each sample
+	// manta makes its out outdir
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
-
-	// resource parameters. currently set to 4 CPUs
-    cpus "${params.cpus}"
 
     // Run with container
 	container "${params.mulled__container}"
@@ -18,31 +15,32 @@ process manta {
 	input:
 	 // matching the target bed with the sample tuple to parallelise sample runs across bed file
 	tuple val(sampleID), file(bam), file(bai)
+	//file(mantaBED)
+	//file(mantaBED_tbi)
 	path(ref)
 	path(ref_fai)
 
 	output:
-	path("manta/*.candidateSmallIndels.vcf.gz")    , emit: small_indels
-    path("manta/*.candidateSmallIndels.vcf.gz.tbi"), emit: small_indels_tbi
-    path("manta/*.candidateSV.vcf.gz")             , emit: candidate
-    path("manta/*.candidateSV.vcf.gz.tbi")         , emit: candidate_tbi
-    path("manta/*.diploidSV.vcf.gz")               , emit: diploid
-    path("manta/*.diploidSV.vcf.gz.tbi")           , emit: diploid_tbi
+	path("manta/*.candidateSmallIndels.vcf.gz")    , emit: manta_small_indels
+    path("manta/*.candidateSmallIndels.vcf.gz.tbi"), emit: manta_small_indels_tbi
+    path("manta/*.candidateSV.vcf.gz")             , emit: manta_candidate
+    path("manta/*.candidateSV.vcf.gz.tbi")         , emit: manta_candidate_tbi
+    path("manta/*.diploidSV.vcf.gz")               , emit: manta_diploid
+    path("manta/*.diploidSV.vcf.gz.tbi")           , emit: manta_diploid_tbi
 
 	script:
-	// define custom function for optional use of target regions bed 
-	// TODO add optional use of bed file- will need to add $manta_bed to configManta.py code 
+	// define custom functions for optional flags
 	//def manta_bed = mantaBED ? "--callRegions $params.mantaBED" : ""
-	
+	// TODO: add optional parameters. 
 	"""
 	# configure manta SV analysis workflow
-		configManta.py \\
-		--normalBam ${bam} \\
-		--referenceFasta ${params.ref} \\
-		--runDir manta \\
-	
+		configManta.py \
+		--normalBam ${bam} \
+		--referenceFasta ${params.ref} \
+		--runDir manta \
+
 	# run SV detection 
-	manta/runWorkflow.py -m local -j ${params.cpus}
+	manta/runWorkflow.py -m local -j 8
 
 	# convert multiline inversion BNDs from manta vcf to single line
 	convertInversion.py \$(which samtools) ${params.ref} manta/results/variants/diploidSV.vcf.gz \

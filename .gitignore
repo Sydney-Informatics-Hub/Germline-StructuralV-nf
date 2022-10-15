@@ -4,10 +4,8 @@ NOTES
 .nextflow/
 work/
 germlineStructuralV_results
-samples.tsv
 *.tsv
 runInfo/
 results/
-Results/
-.vscode
+.vscode/
 PIPE-2988_NOTES.md

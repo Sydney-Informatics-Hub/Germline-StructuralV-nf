@@ -6,12 +6,10 @@ nextflow.enable.dsl=2
 // Define the process
 process smoove {
 	debug true
+	// smoove makes its out outdir
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
 
-	// resource parameters. Developer suggests good scaling up to 2-3 CPUs
-    cpus "${params.smooveCPUs}"
-
-        // Run with container
+    // Run with container
 	container "${params.smoove__container}"
 	
 	input:
@@ -20,13 +18,13 @@ process smoove {
 	path(ref_fai)
 
 	output:
-	tuple val(sampleID), path("smoove/*-smoove.genotyped.vcf.gz")
-	tuple val(sampleID), path("smoove/*-smoove.genotyped.vcf.gz.csi")
-	tuple val(sampleID), path("smoove/*.split.bam")
-	tuple val(sampleID), path("smoove/*.split.bam.csi")
-	tuple val(sampleID), path("smoove/*.disc.bam") 
-	tuple val(sampleID), path("smoove/*.disc.bam.csi")
-	tuple val(sampleID), path("smoove/*.histo")
+	path("smoove/*-smoove.genotyped.vcf.gz"), 		emit: smoove_vcf
+	path("smoove/*-smoove.genotyped.vcf.gz.csi"), 	emit: smoove_vcf_csi
+	path("smoove/*.split.bam"), 					emit: smoove_split
+	path("smoove/*.split.bam.csi"), 				emit: smoove_split_csi
+	path("smoove/*.disc.bam"), 						emit: smoove_disc
+	path("smoove/*.disc.bam.csi"), 					emit: smoove_disc_csi
+	path("smoove/*.histo"), 						emit: smoove_histo
 	
 	script:
 	// suggest printing stats as per: https://github.com/brwnj/smoove-nf/blob/master/main.nf 
@@ -34,7 +32,7 @@ process smoove {
 	smoove call --name ${sampleID} \
 	--fasta ${params.ref} \
 	--outdir smoove \
-	-p ${params.smooveCPUs} \
+	-p ${task.cpus} \
 	--genotype ${bam}
 	"""
 } 
