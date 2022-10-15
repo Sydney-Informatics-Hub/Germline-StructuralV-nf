@@ -21,12 +21,15 @@ process manta {
 	path(ref_fai)
 
 	output:
-	path("manta/*.candidateSmallIndels.vcf.gz")    , emit: manta_small_indels
-    path("manta/*.candidateSmallIndels.vcf.gz.tbi"), emit: manta_small_indels_tbi
-    path("manta/*.candidateSV.vcf.gz")             , emit: manta_candidate
-    path("manta/*.candidateSV.vcf.gz.tbi")         , emit: manta_candidate_tbi
-    path("manta/*.diploidSV.vcf.gz")               , emit: manta_diploid
-    path("manta/*.diploidSV.vcf.gz.tbi")           , emit: manta_diploid_tbi
+	path("manta/*.candidateSmallIndels.vcf.gz")    	, emit: manta_small_indels
+    path("manta/*.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
+    path("manta/*.candidateSV.vcf.gz")             	, emit: manta_candidate
+    path("manta/*.candidateSV.vcf.gz.tbi")         	, emit: manta_candidate_tbi
+    path("manta/*.diploidSV.vcf.gz")               	, emit: manta_diploid
+    path("manta/*.diploidSV.vcf.gz.tbi")           	, emit: manta_diploid_tbi
+	path("manta/*.diploid_converted.vcf")			, emit: manta_diploid_converted
+	path("manta/*.diploid_converted.vcf.gz.tbi")	, emit: manta_diploid_converted_tbi
+	path("MantaVCF_path")							, emit: manta_VCF
 
 	script:
 	// define custom functions for optional flags
@@ -66,7 +69,10 @@ process manta {
 		manta/Manta_${sampleID}.diploid_converted.vcf.gz
 	mv manta/results/variants/diploid_converted.vcf.gz.tbi \
 		manta/Manta_${sampleID}.diploid_converted.vcf.gz.tbi
-		
-	rm -rf manta/results/variants
+
+	gunzip manta/Manta_${sampleID}.diploid_converted.vcf.gz
+
+	#collect file name for merging 
+	echo manta/Manta_${sampleID}.diploidSV_converted.vcf > MantaVCF_path 
 	"""
 } 

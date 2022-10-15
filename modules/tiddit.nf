@@ -17,9 +17,10 @@ process tiddit_sv {
 	path(ref_fai)
 
 	output:
-	path("*_sv.vcf"), 			emit: tiddit_vcf
-	path("*.ploidies.tab"), 	emit: tiddit_ploidy
-	path("*_tiddit"), 			emit: tiddit_workdir
+	path("*_sv.vcf") 			, emit: tiddit_vcf
+	path("*.ploidies.tab") 		, emit: tiddit_ploidy
+	path("*_tiddit") 			, emit: tiddit_workdir
+	path("TidditVCF_path")		, emit: tiddit_VCF
 	
 	script:
 	// will need to add option for additional flags. See manta script for example
@@ -31,8 +32,12 @@ process tiddit_sv {
 	-o ${sampleID}_sv \
 	--threads ${task.cpus}
 
+	# rename vcf to show its from tiddit 
 	mv ${sampleID}_sv.vcf \
 		Tiddit_${sampleID}_sv.vcf
+
+	#collect file name for merging 
+	echo Tiddit_${sampleID}_sv.vcf > TidditVCF_path 
 	"""
 }
 
