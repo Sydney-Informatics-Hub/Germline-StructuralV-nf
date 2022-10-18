@@ -3,12 +3,16 @@
 nextflow.enable.dsl=2
 
 // Import subworkflows to be run in the workflow
-include { checkInputs }         from './modules/check_cohort'
-include { smoove }              from './modules/smoove' 
-include { manta }               from './modules/manta'
-include { tiddit_sv }           from './modules/tiddit'
-include { tiddit_cov }          from './modules/tiddit'
-include { survivor_merge }      from './modules/survivor'
+include { checkInputs }     from './modules/check_cohort'
+include { smoove }          from './modules/smoove' 
+//include { rehead_smoove } from './modules/smoove'
+include { manta }           from './modules/manta'
+include { rehead_manta }    from './modules/manta'
+//include { tiddit_sv }       from './modules/tiddit'
+//include { rehead_tiddit } from './modules/tiddit'
+//include { tiddit_cov }      from './modules/tiddit'
+//include { survivor_merge }  from './modules/survivor'
+
 
 // Print the header to screen when running the pipeline
 log.info """\
@@ -96,11 +100,14 @@ workflow {
   input = checkInputs.out
           .splitCsv(header: true, sep:"\t")
           .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
-
+ 
 	// Call SVs with Manta  
 	//manta(input, params.mantaBED, params.mantaBED_tbi, params.ref, params.ref+'.fai')
-  //manta(input, params.ref, params.ref+'.fai')
+  manta(input, params.ref, params.ref+'.fai')
 	
+  // Rehead manta file for merging 
+  rehead_manta(input, manta.out.manta_diploid_convert, manta.out.manta_diploid_convert_tbi, params.ref, params.ref+'.fai')
+
   // Call SVs with Smoove
 	//smoove(input, params.ref, params.ref+'.fai')
 
@@ -109,11 +116,8 @@ workflow {
 
 	// Run TIDDIT cov 
 	//tiddit_cov(input, params.ref, params.ref+'.fai')
-  
+
   // Collect VCFs for merging
-  sampleID  = splitCsv(input)
-            .groupTuple()
-            .view()
   //mergelist = tiddit_sv.out.tiddit_VCF.concat(smoove.out.smoove_VCF, manta.out.manta_VCF)
   //        .groupTuple()
   //        .collectFile(name: "${params.outDir}/${sampleID}/sampleVCFs.txt", sort: false)

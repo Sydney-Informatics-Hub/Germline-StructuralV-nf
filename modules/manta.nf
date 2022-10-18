@@ -15,26 +15,24 @@ process manta {
 	input:
 	 // matching the target bed with the sample tuple to parallelise sample runs across bed file
 	tuple val(sampleID), file(bam), file(bai)
-	//file(mantaBED)
-	//file(mantaBED_tbi)
 	path(ref)
 	path(ref_fai)
 
 	output:
-	path("manta/*.candidateSmallIndels.vcf.gz")    	, emit: manta_small_indels
-    path("manta/*.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
-    path("manta/*.candidateSV.vcf.gz")             	, emit: manta_candidate
-    path("manta/*.candidateSV.vcf.gz.tbi")         	, emit: manta_candidate_tbi
-    path("manta/*.diploidSV.vcf.gz")               	, emit: manta_diploid
-    path("manta/*.diploidSV.vcf.gz.tbi")           	, emit: manta_diploid_tbi
-	path("manta/*.diploid_converted.vcf")			, emit: manta_diploid_converted
-	path("manta/*.diploid_converted.vcf.gz.tbi")	, emit: manta_diploid_converted_tbi
-	path("MantaVCF_path")							, emit: manta_VCF
+	// no need to tie path to sampleID with tuple, carried forward from input
+	path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz")  	, emit: manta_small_indels
+    path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
+    path("manta/Manta_${sampleID}.candidateSV.vcf.gz")             	, emit: manta_candidate
+    path("manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi")         	, emit: manta_candidate_tbi
+    path("manta/Manta_${sampleID}.diploidSV.vcf.gz")               	, emit: manta_diploid
+    path("manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi")           	, emit: manta_diploid_tbi
+	path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz")		, emit: manta_diploid_convert
+	path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")	, emit: manta_diploid_convert_tbi
 
 	script:
+	// TODO: add optional parameters. 
 	// define custom functions for optional flags
 	//def manta_bed = mantaBED ? "--callRegions $params.mantaBED" : ""
-	// TODO: add optional parameters. 
 	"""
 	# configure manta SV analysis workflow
 		configManta.py \
@@ -43,14 +41,7 @@ process manta {
 		--runDir manta \
 
 	# run SV detection 
-	manta/runWorkflow.py -m local -j 8
-
-	# convert multiline inversion BNDs from manta vcf to single line
-	convertInversion.py \$(which samtools) ${params.ref} manta/results/variants/diploidSV.vcf.gz \
-		| bgzip --threads ${params.cpus} > manta/results/variants/diploid_converted.vcf.gz
-    
-	# index vcf
-	tabix manta/results/variants/diploid_converted.vcf.gz
+	manta/runWorkflow.py -m local -j 12
 
 	# clean up outputs
 	mv manta/results/variants/candidateSmallIndels.vcf.gz \
@@ -65,14 +56,43 @@ process manta {
 		manta/Manta_${sampleID}.diploidSV.vcf.gz
 	mv manta/results/variants/diploidSV.vcf.gz.tbi \
 		manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi
-	mv manta/results/variants/diploid_converted.vcf.gz \
-		manta/Manta_${sampleID}.diploid_converted.vcf.gz
-	mv manta/results/variants/diploid_converted.vcf.gz.tbi \
-		manta/Manta_${sampleID}.diploid_converted.vcf.gz.tbi
+	
+	# convert multiline inversion BNDs from manta vcf to single line
+	convertInversion.py \$(which samtools) ${params.ref} \
+		manta/Manta_${sampleID}.diploidSV.vcf.gz \
+		> manta/Manta_${sampleID}.diploidSV_converted.vcf
 
-	gunzip manta/Manta_${sampleID}.diploid_converted.vcf.gz
-
-	#collect file name for merging 
-	echo manta/Manta_${sampleID}.diploidSV_converted.vcf > MantaVCF_path 
+	# zip and index converted vcf
+	bgzip manta/Manta_${sampleID}.diploidSV_converted.vcf
+	tabix manta/Manta_${sampleID}.diploidSV_converted.vcf.gz
 	"""
 } 
+
+process rehead_manta {
+	debug true 
+	publishDir "${params.outDir}/${sampleID}/manta", mode: 'copy'
+	container "${params.bcftools__container}"
+
+	input:
+	//TODO: work out how pass input without bam 
+	tuple val(sampleID), file(bam)
+	path(manta_diploid_convert) 
+	path(manta_diploid_convert_tbi)
+	path(ref)
+	path(ref_fai)
+		
+	output:
+	path("Manta_*.vcf")	, emit: Manta_convertedVCF	
+		
+	script:
+	"""
+	# create new header for merged vcf
+	printf "${sampleID}_manta\n" > ${sampleID}_rehead_manta.txt
+
+	# replace sampleID with caller_sample for merging 	
+	bcftools reheader \
+		Manta_${sampleID}.diploidSV_converted.vcf.gz \
+		-s ${sampleID}_rehead_manta.txt \
+		-o Manta_${sampleID}.vcf
+	"""
+}

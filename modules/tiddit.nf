@@ -20,7 +20,7 @@ process tiddit_sv {
 	path("*_sv.vcf") 			, emit: tiddit_vcf
 	path("*.ploidies.tab") 		, emit: tiddit_ploidy
 	path("*_tiddit") 			, emit: tiddit_workdir
-	path("TidditVCF_path")		, emit: tiddit_VCF
+	val("TidditVCF_path")		, emit: tiddit_VCF
 	
 	script:
 	// will need to add option for additional flags. See manta script for example
