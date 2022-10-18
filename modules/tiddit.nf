@@ -17,10 +17,9 @@ process tiddit_sv {
 	path(ref_fai)
 
 	output:
-	path("*_sv.vcf") 			, emit: tiddit_vcf
-	path("*.ploidies.tab") 		, emit: tiddit_ploidy
-	path("*_tiddit") 			, emit: tiddit_workdir
-	val("TidditVCF_path")		, emit: tiddit_VCF
+	path("Tiddit_${sampleID}_sv.vcf") 	, emit: tiddit_vcf
+	path("${sampleID}_sv.ploidies.tab") , emit: tiddit_ploidy
+	path("${sampleID}_sv_tiddit") 		, emit: tiddit_workdir
 	
 	script:
 	// will need to add option for additional flags. See manta script for example
@@ -35,9 +34,39 @@ process tiddit_sv {
 	# rename vcf to show its from tiddit 
 	mv ${sampleID}_sv.vcf \
 		Tiddit_${sampleID}_sv.vcf
+	"""
+}
 
-	#collect file name for merging 
-	echo Tiddit_${sampleID}_sv.vcf > TidditVCF_path 
+process rehead_tiddit {
+	debug true 
+	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
+	container "${params.bcftools__container}"
+
+	input:
+	//TODO: work out how pass input without associating a bam to the sampleID?
+	tuple val(sampleID), path("")
+	path(tiddit_vcf)
+		
+	output:
+	path("Tiddit_${sampleID}.vcf")	, emit: Tiddit_finalVCF	
+		
+	script:
+	"""
+	# index smoove vcf 
+	bgzip tiddit/Tiddit_${sampleID}_sv.vcf
+	tabix tiddit/Tiddit_${sampleID}_sv.vcf.gz
+
+	# create new header for merged vcf
+	printf "${sampleID}_tiddit\n" > ${sampleID}_rehead_tiddit.txt
+
+	# replace sampleID with caller_sample for merging 	
+	bcftools reheader \
+		Tiddit_${sampleID}_sv.vcf.gz \
+		-s ${sampleID}_rehead_tiddit.txt \
+		-o Tiddit_${sampleID}.vcf
+	
+	#clean up
+	#rm -r ${sampleID}_rehead_tiddit.txt
 	"""
 }
 

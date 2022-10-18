@@ -74,15 +74,13 @@ process rehead_manta {
 	container "${params.bcftools__container}"
 
 	input:
-	//TODO: work out how pass input without bam 
-	tuple val(sampleID), file(bam)
+	//TODO: work out how pass input without associating a bam to the sampleID?
+	tuple val(sampleID), path(vcf)
 	path(manta_diploid_convert) 
 	path(manta_diploid_convert_tbi)
-	path(ref)
-	path(ref_fai)
 		
 	output:
-	path("Manta_*.vcf")	, emit: Manta_convertedVCF	
+	path("Manta_${sampleID}.vcf")	, emit: Manta_finalVCF	
 		
 	script:
 	"""
