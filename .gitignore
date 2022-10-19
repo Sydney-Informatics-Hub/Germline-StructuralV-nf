@@ -7,5 +7,6 @@ germlineStructuralV_results
 *.tsv
 runInfo/
 results/
-.vscode/
+.vscode
 PIPE-2988_NOTES.md
+.vscode
