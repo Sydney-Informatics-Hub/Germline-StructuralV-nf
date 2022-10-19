@@ -7,8 +7,6 @@ nextflow.enable.dsl=2
 process tiddit_sv {
 	debug true
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
-
-    // Run with container
 	container "${params.tiddit__container}"
 	
 	input:
@@ -17,12 +15,12 @@ process tiddit_sv {
 	path(ref_fai)
 
 	output:
-	path("Tiddit_${sampleID}_sv.vcf") 	, emit: tiddit_vcf
-	path("${sampleID}_sv.ploidies.tab") , emit: tiddit_ploidy
-	path("${sampleID}_sv_tiddit") 		, emit: tiddit_workdir
+	tuple val(sampleID), path("Tiddit_${sampleID}_sv.vcf") 	, emit: tiddit_vcf
+	tuple val(sampleID), path("${sampleID}_sv.ploidies.tab") , emit: tiddit_ploidy
+	tuple val(sampleID), path("${sampleID}_sv_tiddit") 		, emit: tiddit_workdir
 	
 	script:
-	// will need to add option for additional flags. See manta script for example
+	// TODO: will need to add option for additional flags
 	"""
 	tiddit \
 	--sv \
@@ -37,24 +35,23 @@ process tiddit_sv {
 	"""
 }
 
+// rehead tiddit SV vcf for merging 
 process rehead_tiddit {
 	debug true 
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
 	container "${params.bcftools__container}"
 
 	input:
-	//TODO: work out how pass input without associating a bam to the sampleID?
-	tuple val(sampleID), path("")
-	path(tiddit_vcf)
+	tuple val(sampleID), path(tiddit_vcf)
 		
 	output:
-	path("Tiddit_${sampleID}.vcf")	, emit: Tiddit_finalVCF	
+	path("Tiddit_*.vcf")	, emit: finalVCF
 		
 	script:
 	"""
 	# index smoove vcf 
-	bgzip tiddit/Tiddit_${sampleID}_sv.vcf
-	tabix tiddit/Tiddit_${sampleID}_sv.vcf.gz
+	bgzip Tiddit_${sampleID}_sv.vcf
+	tabix Tiddit_${sampleID}_sv.vcf.gz
 
 	# create new header for merged vcf
 	printf "${sampleID}_tiddit\n" > ${sampleID}_rehead_tiddit.txt
@@ -70,7 +67,7 @@ process rehead_tiddit {
 	"""
 }
 
-// calculate coverage of bam files 
+// calculate coverage of bam files with tiddit cov
 process tiddit_cov {
 	debug true
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'

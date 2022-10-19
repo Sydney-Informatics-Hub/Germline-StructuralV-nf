@@ -3,31 +3,26 @@
 // Enable DSL-2 syntax
 nextflow.enable.dsl=2
 
-// Define the process
+// run manta structural variant detection and convert inversions
 process manta {
 	debug true
-	// manta makes its out outdir
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
-
-    // Run with container
 	container "${params.mulled__container}"
 	
 	input:
-	 // matching the target bed with the sample tuple to parallelise sample runs across bed file
 	tuple val(sampleID), file(bam), file(bai)
 	path(ref)
 	path(ref_fai)
 
 	output:
-	// no need to tie path to sampleID with tuple, carried forward from input
-	path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz")  	, emit: manta_small_indels
-    path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
-    path("manta/Manta_${sampleID}.candidateSV.vcf.gz")             	, emit: manta_candidate
-    path("manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi")         	, emit: manta_candidate_tbi
-    path("manta/Manta_${sampleID}.diploidSV.vcf.gz")               	, emit: manta_diploid
-    path("manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi")           	, emit: manta_diploid_tbi
-	path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz")		, emit: manta_diploid_convert
-	path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")	, emit: manta_diploid_convert_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz")  		, emit: manta_small_indels
+    tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
+    tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz")             	, emit: manta_candidate
+    tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi")         	, emit: manta_candidate_tbi
+    tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz")               	, emit: manta_diploid
+    tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi")           	, emit: manta_diploid_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz")			, emit: manta_diploid_convert
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")		, emit: manta_diploid_convert_tbi
 
 	script:
 	// TODO: add optional parameters. 
@@ -68,21 +63,21 @@ process manta {
 	"""
 } 
 
+// rehead manta SV vcf for merging 
 process rehead_manta {
 	debug true 
 	publishDir "${params.outDir}/${sampleID}/manta", mode: 'copy'
 	container "${params.bcftools__container}"
 
 	input:
-	//TODO: work out how pass input without associating a bam to the sampleID?
-	tuple val(sampleID), path(vcf)
-	path(manta_diploid_convert) 
-	path(manta_diploid_convert_tbi)
-		
+	tuple val(sampleID), path(manta_diploid_convert)
+	tuple val(sampleID), path(manta_diploid_convert_tbi)
+
 	output:
-	path("Manta_${sampleID}.vcf")	, emit: Manta_finalVCF	
+	path("Manta_*.vcf")	, emit: finalVCF	
 		
 	script:
+	// TODO: HOW TO PARSE SAMPLEID 
 	"""
 	# create new header for merged vcf
 	printf "${sampleID}_manta\n" > ${sampleID}_rehead_manta.txt

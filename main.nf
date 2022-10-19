@@ -10,7 +10,7 @@ include { manta }           from './modules/manta'
 include { rehead_manta }    from './modules/manta'
 include { tiddit_sv }       from './modules/tiddit'
 include { rehead_tiddit } from './modules/tiddit'
-//include { tiddit_cov }      from './modules/tiddit'
+include { tiddit_cov }      from './modules/tiddit'
 //include { survivor_merge }  from './modules/survivor'
 
 
@@ -97,43 +97,42 @@ workflow {
 	checkInputs(Channel.fromPath(params.input, checkIfExists: true))
 	
 	// Split cohort file to collect info for each sample
-  // THIS IS CAUSING ISSUES ONCE WORKING WITH VCFS.
-  // DO I NEED TO CREATE NEW CHANNEL FOR EACH VCF?
   input = checkInputs.out
           .splitCsv(header: true, sep:"\t")
           .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
 
 	// Call SVs with Manta  
-	//manta(input, params.mantaBED, params.mantaBED_tbi, params.ref, params.ref+'.fai')
   manta(input, params.ref, params.ref+'.fai')
-  
-  mantaVCF = manta.out.manta_diploid_convert 
-  
-  rehead_manta(input, manta.out.manta_diploid_convert, 
-              manta.out.manta_diploid_convert_tbi)
+
+  // Rehead manta vcf for merging 
+  // TODO concat all reheading processes, run across samples x callers
+  rehead_manta(manta.out.manta_diploid_convert, manta.out.manta_diploid_convert_tbi)
 
   // Call SVs with Smoove
-	//smoove(input, params.ref, params.ref+'.fai')
+	smoove(input, params.ref, params.ref+'.fai')
 
   // Rehead smoove vcf for merging  
-  //rehead_smoove(smoove.out.smoove_geno)
+  // TODO concat all reheading processes, run across samples x callers
+  rehead_smoove(smoove.out.smoove_geno)
 
 	// Run TIDDIT sv
-	//tiddit_sv(input, params.ref, params.ref+'.fai')
+	tiddit_sv(input, params.ref, params.ref+'.fai')
   
-  // Rehead TIDDIT vcf for merging 
-  //rehead_tiddit(input, tiddit_sv.out.tiddit_vcf)
+  // Rehead TIDDIT vcf for merging
+  // TODO concat all reheading processes, run across samples x callers
+  rehead_tiddit(tiddit_sv.out.tiddit_vcf)
 
 	// Run TIDDIT cov 
 	//tiddit_cov(input, params.ref, params.ref+'.fai')
 
   // Collect VCFs for merging
-  //mergelist = tiddit_sv.out.tiddit_VCF.concat(smoove.out.smoove_VCF, manta.out.manta_VCF)
-  //        .groupTuple()
-  //        .collectFile(name: "${params.outDir}/${sampleID}/sampleVCFs.txt", sort: false)
+  mergelist = tiddit_sv.out.tiddit_VCF.concat(smoove.out.smoove_VCF, manta.out.manta_VCF)
+          .groupTuple()
+          .collectFile(name: "${params.outDir}/${sampleID}/sampleVCFs.txt", sort: false)
   //
   // Run SURVIVOR merge
-  //survivor_merge(input, mergelist)
+  survivor_merge(input, mergelist)
+  
   // Run SURVIVOR vcf2bedpe
 }}
 
@@ -151,7 +150,6 @@ outDir      : ${params.outDir}
 
 =======================================================================================
   """
-
   println summary
 
 }

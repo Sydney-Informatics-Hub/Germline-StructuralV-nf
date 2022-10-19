@@ -3,15 +3,11 @@
 // Enable DSL-2 syntax
 nextflow.enable.dsl=2
 
-// Define the process
+// run smoove structural variant detection
 process smoove {
 	debug true
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
-
-	// resource parameters. Developer suggests good scaling up to 2-3 CPUs
     cpus "${task.cpus}"
-
-        // Run with container
 	container "${params.smoove__container}"
 	
 	input:
@@ -20,38 +16,36 @@ process smoove {
 	path(ref_fai)
 
 	output:
-	path("smoove/${sampleID}-smoove.genotyped.vcf.gz")		, emit: smoove_geno
-	path("smoove/${sampleID}-smoove.genotyped.vcf.gz.csi")	, emit: smoove_geno_csi
-	path("smoove/${sampleID}.split.bam")					, emit: smoove_split, optional: true
-	path("smoove/${sampleID}.split.bam.csi")				, emit: smoove_split_csi, optional: true
-	path("smoove/${sampleID}.disc.bam") 					, emit: smoove_disc, optional: true
-	path("smoove/${sampleID}.disc.bam.csi")					, emit: smoove_disc_csi, optional: true
-	path("smoove/${sampleID}.histo")						, emit: smoove_histo, optional: true
+	tuple val(sampleID), path("smoove/${sampleID}-smoove.genotyped.vcf.gz")		, emit: smoove_geno
+	tuple val(sampleID), path("smoove/${sampleID}-smoove.genotyped.vcf.gz.csi")	, emit: smoove_geno_csi
+	tuple val(sampleID), path("smoove/${sampleID}.split.bam")					, emit: smoove_split, 		optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.split.bam.csi")				, emit: smoove_split_csi, 	optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.disc.bam") 					, emit: smoove_disc, 		optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.disc.bam.csi")				, emit: smoove_disc_csi,	optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.histo")						, emit: smoove_histo, 		optional: true
 	
 	script:
-	// TODO: suggest printing stats as per: https://github.com/brwnj/smoove-nf/blob/master/main.nf 
+	// TODO: will need to add option for additional flags
 	"""
 	smoove call --name ${sampleID} \
 	--fasta ${params.ref} \
 	--outdir smoove \
 	--processes 4 \
 	--genotype ${bam}
-
 	"""
 } 
 
+// rehead smoove genotyped vcf for merging 
 process rehead_smoove {
 	debug true 
 	publishDir "${params.outDir}/${sampleID}/smoove", mode: 'copy'
 	container "${params.bcftools__container}"
 
 	input:
-	//TODO: work out how pass input without associating a bam to the sampleID?
-	tuple val(sampleID), path(bam)
-	path(smoove_geno)
+	tuple val(sampleID), path(smoove_geno)
 		
 	output:
-	path("Smoove_${sampleID}.vcf")	, emit: Smoove_finalVCF	
+	path("Smoove_${sampleID}.vcf")	, emit: finalVCF	
 		
 	script:
 	"""
