@@ -3,18 +3,23 @@
 nextflow.enable.dsl=2
 
 // Import subworkflows to be run in the workflow
-include { checkInputs } from './modules/check_cohort'
-include { smoove } from './modules/smoove' 
-include { manta } from './modules/manta'
-include { tiddit_sv } from './modules/tiddit'
-include { tiddit_cov } from './modules/tiddit'
+include { checkInputs }     from './modules/check_cohort'
+include { smoove }          from './modules/smoove' 
+include { rehead_smoove }   from './modules/smoove'
+include { manta }           from './modules/manta'
+include { rehead_manta }    from './modules/manta'
+include { tiddit_sv }       from './modules/tiddit'
+include { rehead_tiddit } from './modules/tiddit'
+include { tiddit_cov }      from './modules/tiddit'
+//include { survivor_merge }  from './modules/survivor'
+
 
 // Print the header to screen when running the pipeline
 log.info """\
 
         =================================================
         =================================================
-          G E R M L I N E  S T R U C T U R A L  V - n f  
+          G E R M L I N E  S T R U C T U R A L  V - N F 
         =================================================
         =================================================
 
@@ -26,18 +31,30 @@ log.info """\
             `-..,..-'       `-..,..-'       `-..,..-'       `       
 
 
-                      ~~~~ Version: 1.0 ~~~~
+                     ~~~~ Version: 1.0 ~~~~
  
 
  Created by the Sydney Informatics Hub, University of Sydney
 
- Find documentation and more info @ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf
+ Documentation @ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf
 
- Cite this pipeline @ INSERT DOI
+ Cite this pipeline @ TODO:INSERT DOI
 
  Log issues @ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues
 
  All of the default parameters are set in `nextflow.config`
+
+=======================================================================================
+Workflow run parameters 
+=======================================================================================
+
+input       : ${params.input}
+reference   : ${params.ref}
+outDir      : ${params.outDir}
+workDir     : ${workflow.workDir}
+
+=======================================================================================
+
  """
 
 // Help function 
@@ -46,26 +63,24 @@ log.info """\
 
 def helpMessage() {
     log.info"""
-  Usage:  nextflow run main.nf --cohort <samplesheet.tsv> --ref <reference.fasta> 
+  Usage:  nextflow run main.nf --input samplesheet.tsv --ref reference.fasta
 
   Required Arguments:
 
-	--cohort		Full path and name of sample input file (tab separated).
+	--input		Full path and name of sample input file (tsv format).
 
-	--ref			  Full path and name of reference genome (.fasta format).
+	--ref			Full path and name of reference genome (fasta format).
 
     """.stripIndent()
 }
 
 /// Main workflow structure. 
-// TODO: include some input/runtime tests here.
-
 workflow {
 
 // Show help message if --help is run or if any required params are not 
 // provided at runtime
 
-        if ( params.help == true || params.ref == false || params.cohort == false ){
+    if ( params.help == true || params.ref == false || params.input == false ){
         // Invoke the help function above and exit
               helpMessage()
               exit 1
@@ -76,41 +91,65 @@ workflow {
         // could validate indexes for reference exist?
         // confirm with each tool, any requirements for their run?
 
-// if none of the above are a problem, then run the workflow
 	} else {
 	
 	// Check inputs file exists
-	checkInputs(Channel.fromPath(params.cohort, checkIfExists: true))
+	checkInputs(Channel.fromPath(params.input, checkIfExists: true))
 	
 	// Split cohort file to collect info for each sample
-        cohort = checkInputs.out
-                        .splitCsv(header: true, sep:"\t")
-                        .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
+  input = checkInputs.out
+          .splitCsv(header: true, sep:"\t")
+          .map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
 
 	// Call SVs with Manta  
-	manta(cohort, params.ref, params.ref+'.fai')
+  manta(input, params.ref, params.ref+'.fai')
 
-	// Call SVs with Smoove
-	smoove(cohort, params.ref, params.ref+'.fai')
+  // Rehead manta vcf for merging 
+  // TODO concat all reheading processes, run across samples x callers
+  rehead_manta(manta.out.manta_diploid_convert, manta.out.manta_diploid_convert_tbi)
+
+  // Call SVs with Smoove
+	smoove(input, params.ref, params.ref+'.fai')
+
+  // Rehead smoove vcf for merging  
+  // TODO concat all reheading processes, run across samples x callers
+  rehead_smoove(smoove.out.smoove_geno)
 
 	// Run TIDDIT sv
-	tiddit_sv(cohort, params.ref, params.ref+'.fai')
+	tiddit_sv(input, params.ref, params.ref+'.fai')
+  
+  // Rehead TIDDIT vcf for merging
+  // TODO concat all reheading processes, run across samples x callers
+  rehead_tiddit(tiddit_sv.out.tiddit_vcf)
 
 	// Run TIDDIT cov 
-	tiddit_cov(cohort, params.ref, params.ref+'.fai')
+	//tiddit_cov(input, params.ref, params.ref+'.fai')
 
-  // TODO Plot TIDDIT cov output/chromosome 
-  // tiddit_plot_cov()
-
-	// Merge VCFs with Jasmine 
-	//jasmine(cohort)	
-
-  // Genotype variants with 
-
-  // Print report 
-
+  // Collect VCFs for merging
+  mergelist = tiddit_sv.out.tiddit_VCF.concat(smoove.out.smoove_VCF, manta.out.manta_VCF)
+          .groupTuple()
+          .collectFile(name: "${params.outDir}/${sampleID}/sampleVCFs.txt", sort: false)
+  //
+  // Run SURVIVOR merge
+  survivor_merge(input, mergelist)
+  
+  // Run SURVIVOR vcf2bedpe
 }}
 
 workflow.onComplete {
-	log.info ( workflow.success ? "\nDone! Outputs are in `${params.outDir}`" : "Oops .. something went wrong" )
+  summary = """
+=======================================================================================
+Workflow execution summary
+=======================================================================================
+
+Duration    : ${workflow.duration}
+Success     : ${workflow.success}
+workDir     : ${workflow.workDir}
+Exit status : ${workflow.exitStatus}
+outDir      : ${params.outDir}
+
+=======================================================================================
+  """
+  println summary
+
 }

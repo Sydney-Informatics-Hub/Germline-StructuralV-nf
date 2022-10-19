@@ -10,13 +10,13 @@ process checkInputs {
 	// confirm tab separated, confirm correct number of columns
   
 	input:
-	path cohort
+	path input
 
 	output:
 	file "samples.txt"
 	
 	script:
 	"""
-	cat "${params.cohort}" > samples.txt
+	cat "${params.input}" > samples.txt
 	"""
   }
