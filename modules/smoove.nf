@@ -5,11 +5,11 @@ nextflow.enable.dsl=2
 
 // run smoove structural variant detection
 process smoove {
-	debug true
+	debug false
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
     cpus "${task.cpus}"
 	container "${params.smoove__container}"
-	
+
 	input:
 	tuple val(sampleID), file(bam), file(bai)
 	path(ref)
@@ -37,15 +37,15 @@ process smoove {
 
 // rehead smoove genotyped vcf for merging 
 process rehead_smoove {
-	debug true 
+	debug false 
 	publishDir "${params.outDir}/${sampleID}/smoove", mode: 'copy'
-	container "${params.bcftools__container}"
+	container "${params.bcftools__container}" 
 
 	input:
 	tuple val(sampleID), path(smoove_geno)
 		
 	output:
-	path("Smoove_${sampleID}.vcf")	, emit: finalVCF	
+	tuple val(sampleID), path("Smoove_${sampleID}.vcf")	, emit: smoove_VCF	
 		
 	script:
 	"""
@@ -56,7 +56,10 @@ process rehead_smoove {
 	bcftools reheader \
 		${sampleID}-smoove.genotyped.vcf.gz \
 		-s ${sampleID}_rehead_smoove.txt \
-		-o Smoove_${sampleID}.vcf
+		-o Smoove_${sampleID}.vcf.gz
+	
+	# gunzip vcf
+	gunzip Smoove_${sampleID}.vcf.gz
 	
 	#clean up
 	#rm -r ${sampleID}_rehead_smoove.txt

@@ -5,19 +5,19 @@ nextflow.enable.dsl=2
 
 // run tiddit structural variant detection
 process tiddit_sv {
-	debug true
+	debug false
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
 	container "${params.tiddit__container}"
-	
+
 	input:
 	tuple val(sampleID), file(bam), file(bai)
 	path(ref)
 	path(ref_fai)
 
 	output:
-	tuple val(sampleID), path("Tiddit_${sampleID}_sv.vcf") 	, emit: tiddit_vcf
-	tuple val(sampleID), path("${sampleID}_sv.ploidies.tab") , emit: tiddit_ploidy
-	tuple val(sampleID), path("${sampleID}_sv_tiddit") 		, emit: tiddit_workdir
+	tuple val(sampleID), path("Tiddit_${sampleID}_sv.vcf") 		, emit: tiddit_vcf
+	tuple val(sampleID), path("${sampleID}_sv.ploidies.tab") 	, emit: tiddit_ploidy
+	tuple val(sampleID), path("${sampleID}_sv_tiddit") 			, emit: tiddit_workdir
 	
 	script:
 	// TODO: will need to add option for additional flags
@@ -37,7 +37,7 @@ process tiddit_sv {
 
 // rehead tiddit SV vcf for merging 
 process rehead_tiddit {
-	debug true 
+	debug false 
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
 	container "${params.bcftools__container}"
 
@@ -45,7 +45,7 @@ process rehead_tiddit {
 	tuple val(sampleID), path(tiddit_vcf)
 		
 	output:
-	path("Tiddit_*.vcf")	, emit: finalVCF
+	tuple val(sampleID), path("Tiddit_${sampleID}.vcf")	, emit: tiddit_VCF
 		
 	script:
 	"""
@@ -60,7 +60,10 @@ process rehead_tiddit {
 	bcftools reheader \
 		Tiddit_${sampleID}_sv.vcf.gz \
 		-s ${sampleID}_rehead_tiddit.txt \
-		-o Tiddit_${sampleID}.vcf
+		-o Tiddit_${sampleID}.vcf.gz
+	
+	# gunzip vcf
+	gunzip Tiddit_${sampleID}.vcf.gz
 	
 	#clean up
 	#rm -r ${sampleID}_rehead_tiddit.txt
@@ -69,9 +72,9 @@ process rehead_tiddit {
 
 // calculate coverage of bam files with tiddit cov
 process tiddit_cov {
-	debug true
+	debug false
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
-
+	
     // Run with container
 	container "${params.tiddit__container}"
 	
@@ -84,7 +87,7 @@ process tiddit_cov {
 	tuple val(sampleID), path("*.bed")
 	
 	script:
-	// will need to add option for additional flags. See manta script for example
+	// TODO: will need to add option for additional flags. See manta script for example
 	"""
 	tiddit \
 	--cov \

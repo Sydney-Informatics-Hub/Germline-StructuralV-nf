@@ -5,10 +5,10 @@ nextflow.enable.dsl=2
 
 // run manta structural variant detection and convert inversions
 process manta {
-	debug true
+	debug false
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
 	container "${params.mulled__container}"
-	
+
 	input:
 	tuple val(sampleID), file(bam), file(bai)
 	path(ref)
@@ -65,7 +65,7 @@ process manta {
 
 // rehead manta SV vcf for merging 
 process rehead_manta {
-	debug true 
+	debug false 
 	publishDir "${params.outDir}/${sampleID}/manta", mode: 'copy'
 	container "${params.bcftools__container}"
 
@@ -74,10 +74,9 @@ process rehead_manta {
 	tuple val(sampleID), path(manta_diploid_convert_tbi)
 
 	output:
-	path("Manta_*.vcf")	, emit: finalVCF	
+	tuple val(sampleID), path("Manta_*.vcf")	, emit: manta_VCF
 		
 	script:
-	// TODO: HOW TO PARSE SAMPLEID 
 	"""
 	# create new header for merged vcf
 	printf "${sampleID}_manta\n" > ${sampleID}_rehead_manta.txt
@@ -86,6 +85,9 @@ process rehead_manta {
 	bcftools reheader \
 		Manta_${sampleID}.diploidSV_converted.vcf.gz \
 		-s ${sampleID}_rehead_manta.txt \
-		-o Manta_${sampleID}.vcf
+		-o Manta_${sampleID}.vcf.gz
+
+	# gunzip vcf
+	gunzip Manta_${sampleID}.vcf.gz
 	"""
 }

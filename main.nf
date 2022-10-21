@@ -3,16 +3,20 @@
 nextflow.enable.dsl=2
 
 // Import subworkflows to be run in the workflow
-include { checkInputs }     from './modules/check_cohort'
-include { smoove }          from './modules/smoove' 
-include { rehead_smoove }   from './modules/smoove'
-include { manta }           from './modules/manta'
-include { rehead_manta }    from './modules/manta'
-include { tiddit_sv }       from './modules/tiddit'
-include { rehead_tiddit } from './modules/tiddit'
-include { tiddit_cov }      from './modules/tiddit'
-//include { survivor_merge }  from './modules/survivor'
-
+include { checkInputs     }   from './modules/check_cohort'
+include { smoove          }   from './modules/smoove' 
+include { rehead_smoove   }   from './modules/smoove'
+include { manta           }   from './modules/manta'
+include { rehead_manta    }   from './modules/manta'
+include { tiddit_sv       }   from './modules/tiddit'
+include { rehead_tiddit   }   from './modules/tiddit'
+include { tiddit_cov      }   from './modules/tiddit'
+include { survivor_merge  }   from './modules/survivor'
+include { survivor_bed    }   from './modules/survivor'
+//include { VEPgtf_prep     }   from './modules/prep_gtf'
+//include { VEPgtf_run      }   from './modules/ensemblVEP'
+//include { VEPcache_prep  }   from './modules/ensemblVEP'
+include { VEPcache_run    }   from './modules/ensemblVEP'
 
 // Print the header to screen when running the pipeline
 log.info """\
@@ -54,7 +58,6 @@ outDir      : ${params.outDir}
 workDir     : ${workflow.workDir}
 
 =======================================================================================
-
  """
 
 // Help function 
@@ -67,11 +70,21 @@ def helpMessage() {
 
   Required Arguments:
 
-	--input		Full path and name of sample input file (tsv format).
+	--input		  Full path and name of sample input file (tsv format).
 
-	--ref			Full path and name of reference genome (fasta format).
+	--ref			  Full path and name of reference genome (fasta format).
 
-    """.stripIndent()
+  Optional Arguments:
+
+  --outDir    Specify name of results directory. 
+
+  --gtf       Path to GTF file for transcript annotations with VEP. This
+              will run VEP offline, rather than with cache (.gz format). 
+
+  --VEPcache  Path to prepared VEP cache directory. This will run VEP using
+              downloaded and prepared cache.   
+
+""".stripIndent()
 }
 
 /// Main workflow structure. 
@@ -123,17 +136,42 @@ workflow {
   rehead_tiddit(tiddit_sv.out.tiddit_vcf)
 
 	// Run TIDDIT cov 
-	//tiddit_cov(input, params.ref, params.ref+'.fai')
+	tiddit_cov(input, params.ref, params.ref+'.fai')
 
   // Collect VCFs for merging
-  mergelist = tiddit_sv.out.tiddit_VCF.concat(smoove.out.smoove_VCF, manta.out.manta_VCF)
-          .groupTuple()
-          .collectFile(name: "${params.outDir}/${sampleID}/sampleVCFs.txt", sort: false)
-  //
+ mergeFile = rehead_tiddit.out.tiddit_VCF
+              .concat(rehead_smoove.out.smoove_VCF, rehead_manta.out.manta_VCF)
+              .groupTuple() 
+
   // Run SURVIVOR merge
-  survivor_merge(input, mergelist)
-  
+  survivor_merge(mergeFile)
+
   // Run SURVIVOR vcf2bedpe
+  survivor_bed(survivor_merge.out.mergedVCF)
+
+  // Run Ensembl's VEP for variant annotation 
+  // TODO see #10 (https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues/10)
+  
+  // If --VEPcache flag, then download cache directory
+  if (params.VEPcache) {
+    // download cache dir
+    // TODO test this, currently required pre-downloaded cache 
+    // VEPcache_prep()
+    // run vep with cache
+    VEPcache_run(survivor_merge.out.mergedVCF, params.VEPcache)
+  }
+    // TODO once vep_cache_prep() is running change to 
+    //vep_cache_run(survivor_merge.out.mergedVCF, VEPcache_prep.out.cacheVEP, params.ref)
+    
+  // If --gtf prepare gtf and then run transcript level annotations only
+  //if (params.gtf) {
+  //  VEPgtf_prep(params.gtf)
+  //  VEPgtf_run(survivor_merge.out.mergedVCF, 
+  //              params.ref, 
+  //              VEPgtf_prep.out.VEPgtf_gz, 
+  //              VEPgtf_prep.out.VEPgtf_tbi,
+  //              params.VEPcache)
+// }
 }}
 
 workflow.onComplete {
