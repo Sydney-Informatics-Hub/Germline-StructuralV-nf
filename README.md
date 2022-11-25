@@ -165,7 +165,7 @@ Coming soon!
 |metadata field     | GermlineStructuralV-nf / v1.0     |
 |-------------------|:--------------------------------- |
 |Version            | 1.0                               |
-|Maturity           | stable                            |
+|Maturity           | under development                 |
 |Creators           | Georgie Samaha                    |
 |Source             | NA                                |
 |License            | GNU General Public License v3.0   |
