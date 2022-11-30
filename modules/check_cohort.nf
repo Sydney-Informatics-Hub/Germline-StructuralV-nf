@@ -8,7 +8,8 @@ process checkInputs {
 
 	// Plan to write python script to check integrity of file
 	// confirm tab separated, confirm correct number of columns
-  
+	// Confirm bams exist 
+	
 	input:
 	path input
 

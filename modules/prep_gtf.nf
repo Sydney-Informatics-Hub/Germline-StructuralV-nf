@@ -4,10 +4,9 @@
 nextflow.enable.dsl=2
 
 // prepare .gtf for VEP 
-process VEPgtf_prep {
+process vep_GTFprep {
     debug false
-    publishDir "${params.outDir}/${sampleID}/vep", mode: 'copy'
-    cpus 4 //"${task.cpus}"
+    cpus 1
 	container "${params.bcftools__container}"
 
     input:

@@ -10,3 +10,4 @@ results/
 .vscode
 PIPE-2988_NOTES.md
 .vscode
+.nextflow.pid
