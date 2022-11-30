@@ -15,28 +15,28 @@ process manta {
 	path(ref_fai)
 
 	output:
-	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz")  		, emit: manta_small_indels
-    tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
-    tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz")             	, emit: manta_candidate
-    tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi")         	, emit: manta_candidate_tbi
-    tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz")               	, emit: manta_diploid
-    tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi")           	, emit: manta_diploid_tbi
-	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz")			, emit: manta_diploid_convert
-	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")		, emit: manta_diploid_convert_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz")	, emit: manta_small_indels
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz")			, emit: manta_candidate
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi")		, emit: manta_candidate_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz")			, emit: manta_diploid
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi")		, emit: manta_diploid_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz")		, emit: manta_diploid_convert
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")	, emit: manta_diploid_convert_tbi
 
 	script:
 	// TODO: add optional parameters. 
 	// define custom functions for optional flags
-	//def manta_bed = mantaBED ? "--callRegions $params.mantaBED" : ""
+	//def intervals = intervals ? "--callRegions $params.intervals" : ""
 	"""
 	# configure manta SV analysis workflow
 		configManta.py \
 		--normalBam ${bam} \
 		--referenceFasta ${params.ref} \
-		--runDir manta \
+		--runDir manta 
 
 	# run SV detection 
-	manta/runWorkflow.py -m local -j 12
+	manta/runWorkflow.py -m local -j ${task.cpus}
 
 	# clean up outputs
 	mv manta/results/variants/candidateSmallIndels.vcf.gz \
@@ -81,7 +81,7 @@ process rehead_manta {
 	# create new header for merged vcf
 	printf "${sampleID}_manta\n" > ${sampleID}_rehead_manta.txt
 
-	# replace sampleID with caller_sample for merging 	
+	# replace sampleID with caller_sample for merging
 	bcftools reheader \
 		Manta_${sampleID}.diploidSV_converted.vcf.gz \
 		-s ${sampleID}_rehead_manta.txt \

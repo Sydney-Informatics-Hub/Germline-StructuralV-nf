@@ -16,10 +16,9 @@ process survivor_merge {
 	output:
 	tuple val(sampleID), path("${sampleID}_merged.vcf"), emit: mergedVCF
 
-    script:
-	// TODO turn $mergeFile variable into input file
-	// currently 
-    """
+	script:
+	// TODO turn $mergeFile variable into input file 
+	"""
 	echo ${mergeFile} | xargs -n1 > ${sampleID}_survivor.txt
 
 	SURVIVOR merge ${sampleID}_survivor.txt \
@@ -27,26 +26,3 @@ process survivor_merge {
 		${sampleID}_merged.vcf
 	"""
 }
-
-process survivor_bed {
-	debug false
-	publishDir "${params.outDir}/${sampleID}/survivor", mode: 'copy'
-	container "${params.survivor__container}"
-
-	input:
-	//tuple val(sampleID), path(mergelist)
-	tuple val(sampleID), path(mergedVCF)
-
-	output:
-	tuple val(sampleID), path("*")
-
-    script:
-    """
-	SURVIVOR vcftobed ${sampleID}_merged.vcf \
-		0 -1 \
-		${sampleID}_merged.bed
-	"""
-
-}
-
-//process survivor_stats {}
