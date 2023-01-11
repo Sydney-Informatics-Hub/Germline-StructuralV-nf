@@ -216,9 +216,7 @@ To run this pipeline you must have Nextflow and Singularity installed on your ma
 |BCFtools     |1.15.1    |
 |HTSlib       |1.15.1    |
 |SURVIVOR     |1.0.7     |
-|VEP          |108       |
-|R            |          |
-
+|AnnotSV      |3.2.1     |
 
 ## Additional notes 
 ### Resources 
