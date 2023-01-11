@@ -35,7 +35,7 @@ This approach is currently considered best practice for maximising sensitivty of
 ## Diagram
 
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/73086054/211726698-635763b6-11bd-4018-989b-fe9d5be84f6d.png" width="80%">
+<img src="https://user-images.githubusercontent.com/73086054/211727490-f8aca1b7-bbfc-4534-9316-bab451a8682c.png" width="80%">
 </p> 
 
 ## User guide 
