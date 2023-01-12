@@ -1,8 +1,3 @@
-#!/usr/bin/env nextflow
-
-// Enable DSL-2 syntax
-nextflow.enable.dsl=2
-
 // run manta structural variant detection and convert inversions
 process manta {
 	debug false
@@ -25,17 +20,15 @@ process manta {
 	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")		, emit: manta_diploid_convert_tbi
 
 	script:
-	// TODO: add optional parameters. 
-	// define custom functions for optional flags
+	// TODO: add optional parameters $args. 
 	def intervals = params.intervals ? "--callRegions $params.intervals" : ''
-
 	"""
 	# configure manta SV analysis workflow
 	configManta.py \
 		--normalBam ${bam} \
 		--referenceFasta ${params.ref} \
 		--runDir manta \
-		${intervals}
+		$intervals
 
 	# run SV detection 
 	manta/runWorkflow.py -m local -j ${task.cpus}

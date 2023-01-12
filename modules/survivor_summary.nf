@@ -1,15 +1,10 @@
-#!/bin/env nextflow
-
-// Enable DSL-2 syntax
-nextflow.enable.dsl=2
-
+// generate summary counts for merged VCF
 process survivor_summary {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/survivor", mode: 'copy'
 	container "${params.survivor__container}"
 
 	input:
-	//tuple val(sampleID), path(mergelist)
 	tuple val(sampleID), path(mergedVCF)
 
 	output:

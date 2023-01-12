@@ -12,7 +12,7 @@ include { rehead_tiddit     }   from './modules/tiddit_sv'
 include { tiddit_cov        }   from './modules/tiddit_cov'
 include { survivor_merge    }   from './modules/survivor_merge'
 include { survivor_summary  }   from './modules/survivor_summary'
-//include { svAnnot           }   from './modules/vcf_anno'
+include { annotsv           }   from './modules/annotsv'
 
 // Print the header to screen when running the pipeline
 log.info """\
@@ -33,11 +33,11 @@ Log issues		@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/
 Workflow run parameters 
 ===================================================================
 
-version     : ${params.version}
-input       : ${params.input}
-reference   : ${params.ref}
-outDir      : ${params.outDir}
-workDir     : ${workflow.workDir}
+version		: ${params.version}
+input		: ${params.input}
+reference	: ${params.ref}
+outDir		: ${params.outDir}
+workDir		: ${workflow.workDir}
 
 ===================================================================
  """
@@ -52,9 +52,9 @@ Usage:  nextflow run main.nf --input samplesheet.tsv --ref reference.fasta
 
 Required Arguments:
 
-	--input     	Full path and name of sample input file (tsv format).
+	--input			Full path and name of sample input file (tsv format).
 
-	--ref       	Full path and name of reference genome (fasta format).
+	--ref			Full path and name of reference genome (fasta format).
 
 Optional Arguments:
 
@@ -62,6 +62,9 @@ Optional Arguments:
 
 	--intervals		Full path and name of the intervals file for Manta 
 					(bed format).
+
+	--annotsvDir	Full path to the directory housing the prepared
+					Annotations_human directory for AnnotSV. 
 
 """.stripIndent()
 }
@@ -115,10 +118,10 @@ if ( params.help == true || params.ref == false || params.input == false ){
 	// Run SURVIVOR summary
 	survivor_summary(survivor_merge.out.mergedVCF)
 
-	// 	TODO Run AnnotSV annotation/prioritsation
-	//annotsv(survivor_merge.out.mergedVCF)
-
-}}
+	// Run AnnotSV (optional)
+	if (params.annotsvDir) {
+		annotsv(survivor_merge.out.mergedVCF, params.annotsvDir)}
+	}}
 
 workflow.onComplete {
 
@@ -127,11 +130,11 @@ summary = """
 Workflow execution summary
 ===================================================================
 
-Duration    : ${workflow.duration}
-Success     : ${workflow.success}
-workDir     : ${workflow.workDir}
-Exit status : ${workflow.exitStatus}
-outDir      : ${params.outDir}
+Duration	: ${workflow.duration}
+Success		: ${workflow.success}
+workDir		: ${workflow.workDir}
+Exit status	: ${workflow.exitStatus}
+outDir		: ${params.outDir}
 
 ===================================================================
 
