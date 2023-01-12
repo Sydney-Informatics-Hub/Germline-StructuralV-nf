@@ -33,7 +33,7 @@ This approach is currently considered the best approach for maximising sensitivt
 ## Diagram
 
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/73086054/211727490-f8aca1b7-bbfc-4534-9316-bab451a8682c.png" width="80%">
+<img src="https://user-images.githubusercontent.com/73086054/211971740-772796bc-6fb7-43fb-885b-d9cb116bfdd0.png" width="80%">
 </p> 
 
 ## User guide 
