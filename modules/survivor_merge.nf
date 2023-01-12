@@ -1,9 +1,4 @@
-#!/bin/env nextflow
-
-// Enable DSL-2 syntax
-nextflow.enable.dsl=2
-
-// Define the process
+// Merge manta, smoove, tiddit vcfs 
 process survivor_merge {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/survivor", mode: 'copy'

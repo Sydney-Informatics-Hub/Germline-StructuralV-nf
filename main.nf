@@ -12,11 +12,7 @@ include { rehead_tiddit     }   from './modules/tiddit_sv'
 include { tiddit_cov        }   from './modules/tiddit_cov'
 include { survivor_merge    }   from './modules/survivor_merge'
 include { survivor_summary  }   from './modules/survivor_summary'
-//include { vep_GTFprep       }   from './modules/prep_gtf'
-//include { vep_GTFrun        }   from './modules/ensemblVEP_gtf'
-//include { vep_cacheprep     }   from './modules/ensemblVEP_cache'
-//include { vep_cacherun      }   from './modules/ensemblVEP_cache'
-include { svAnnot           }   from './modules/vcf_anno'
+include { annotsv           }   from './modules/annotsv'
 
 // Print the header to screen when running the pipeline
 log.info """\
@@ -29,19 +25,19 @@ Created by the Sydney Informatics Hub, University of Sydney
 
 Documentation	@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf
 
-Cite		@ TODO:INSERT DOI
+Cite			@ TODO:INSERT DOI
 
-Log issues	@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues
+Log issues		@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues
 
 ===================================================================
 Workflow run parameters 
 ===================================================================
 
-version     : ${params.version}
-input       : ${params.input}
-reference   : ${params.ref}
-outDir      : ${params.outDir}
-workDir     : ${workflow.workDir}
+version		: ${params.version}
+input		: ${params.input}
+reference	: ${params.ref}
+outDir		: ${params.outDir}
+workDir		: ${workflow.workDir}
 
 ===================================================================
  """
@@ -56,18 +52,19 @@ Usage:  nextflow run main.nf --input samplesheet.tsv --ref reference.fasta
 
 Required Arguments:
 
-	--input     Full path and name of sample input file (tsv format).
+	--input			Full path and name of sample input file (tsv format).
 
-	--ref       Full path and name of reference genome (fasta format).
+	--ref			Full path and name of reference genome (fasta format).
 
 Optional Arguments:
 
-	--outDir	Specify name of results directory. 
+	--outDir		Full path and name of results directory. 
 
-	--gtf		Path to GTF file for transcript annotations with VEP. 
+	--intervals		Full path and name of the intervals file for Manta 
+					(bed format).
 
-	--VEPcache	Path to prepared VEP cache directory. This will run VEP offline 
-				using a pre-downloaded cache.   
+	--annotsvDir	Full path to the directory housing the prepared
+					Annotations_human directory for AnnotSV. 
 
 """.stripIndent()
 }
@@ -93,21 +90,18 @@ if ( params.help == true || params.ref == false || params.input == false ){
 	manta(input, params.ref, params.ref+'.fai')
 
 	// Rehead manta vcf for merging 
-	// TODO concat all reheading processes, run across samples x callers
 	rehead_manta(manta.out.manta_diploid_convert, manta.out.manta_diploid_convert_tbi)
 
 	// Call SVs with Smoove
 	smoove(input, params.ref, params.ref+'.fai')
 
 	// Rehead smoove vcf for merging  
-	// TODO concat all reheading processes, run across samples x callers
 	rehead_smoove(smoove.out.smoove_geno)
 
 	// Run TIDDIT sv
 	tiddit_sv(input, params.ref, params.ref+'.fai')
   
 	// Rehead TIDDIT vcf for merging
-	// TODO concat all reheading processes, run across samples x callers
 	rehead_tiddit(tiddit_sv.out.tiddit_vcf)
 
 	// Run TIDDIT cov 
@@ -115,8 +109,8 @@ if ( params.help == true || params.ref == false || params.input == false ){
 
 	// Collect VCFs for merging
 	mergeFile = rehead_tiddit.out.tiddit_VCF
-			.concat(rehead_smoove.out.smoove_VCF, rehead_manta.out.manta_VCF)
-			.groupTuple() 
+		.concat(rehead_smoove.out.smoove_VCF, rehead_manta.out.manta_VCF)
+		.groupTuple() 
 
 	// Run SURVIVOR merge
 	survivor_merge(mergeFile)
@@ -124,25 +118,10 @@ if ( params.help == true || params.ref == false || params.input == false ){
 	// Run SURVIVOR summary
 	survivor_summary(survivor_merge.out.mergedVCF)
 
-	// Run Ensembl's VEP for variant annotation 
-	// TODO see #10 (https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues/10)
-	// If --VEPcache flag, then download cache directory
-	if (params.vep_cacherun) {
-	// TODO currently requires pre-downloaded cache 
-	//vep_cacheprep()
-    
-	// run vep with cache
-	vep_cacherun(survivor_merge.out.mergedVCF, params.VEPcache)
-	// TODO once vep_cache_prep() is running change to 
-	//vep_cacherun(survivor_merge.out.mergedVCF, vep_cacheprep.out.cacheVEP, params.ref)
-	}
-
-	// If --gtf prepare gtf and then run transcript level annotations only 
-	//if (params.gtf) {
-	//vep_GTFprep(params.gtf)
-	//vep_GTFrun(survivor_merge.out.mergedVCF, params.ref, vep_GTFprep.out.VEPgtf_gz, vep_GTFprep.out.VEPgtf_tbi, params.VEPcache)
-	//}
-}}
+	// Run AnnotSV (optional)
+	if (params.annotsvDir) {
+		annotsv(survivor_merge.out.mergedVCF, params.annotsvDir)}
+	}}
 
 workflow.onComplete {
 
@@ -151,11 +130,11 @@ summary = """
 Workflow execution summary
 ===================================================================
 
-Duration    : ${workflow.duration}
-Success     : ${workflow.success}
-workDir     : ${workflow.workDir}
-Exit status : ${workflow.exitStatus}
-outDir      : ${params.outDir}
+Duration	: ${workflow.duration}
+Success		: ${workflow.success}
+workDir		: ${workflow.workDir}
+Exit status	: ${workflow.exitStatus}
+outDir		: ${params.outDir}
 
 ===================================================================
 

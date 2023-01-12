@@ -1,8 +1,3 @@
-#!/usr/bin/env nextflow
-
-// Enable DSL-2 syntax
-nextflow.enable.dsl=2
-
 // run manta structural variant detection and convert inversions
 process manta {
 	debug false
@@ -15,25 +10,25 @@ process manta {
 	path(ref_fai)
 
 	output:
-	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz")	, emit: manta_small_indels
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz")		, emit: manta_small_indels
 	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSmallIndels.vcf.gz.tbi")	, emit: manta_small_indels_tbi
-	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz")			, emit: manta_candidate
-	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi")		, emit: manta_candidate_tbi
-	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz")			, emit: manta_diploid
-	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi")		, emit: manta_diploid_tbi
-	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz")		, emit: manta_diploid_convert
-	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")	, emit: manta_diploid_convert_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz")					, emit: manta_candidate
+	tuple val(sampleID), path("manta/Manta_${sampleID}.candidateSV.vcf.gz.tbi")				, emit: manta_candidate_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz")					, emit: manta_diploid
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi")				, emit: manta_diploid_tbi
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz")			, emit: manta_diploid_convert
+	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")		, emit: manta_diploid_convert_tbi
 
 	script:
-	// TODO: add optional parameters. 
-	// define custom functions for optional flags
-	//def intervals = intervals ? "--callRegions $params.intervals" : ""
+	// TODO: add optional parameters $args. 
+	def intervals = params.intervals ? "--callRegions $params.intervals" : ''
 	"""
 	# configure manta SV analysis workflow
-		configManta.py \
+	configManta.py \
 		--normalBam ${bam} \
 		--referenceFasta ${params.ref} \
-		--runDir manta 
+		--runDir manta \
+		$intervals
 
 	# run SV detection 
 	manta/runWorkflow.py -m local -j ${task.cpus}

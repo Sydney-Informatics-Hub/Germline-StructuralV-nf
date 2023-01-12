@@ -1,13 +1,9 @@
 testScripts/
 NOTES
-.nextflow.log*
+.nextflow.*
 .nextflow/
 work/
-germlineStructuralV_results
 *.tsv
 runInfo/
 results/
 .vscode
-PIPE-2988_NOTES.md
-.vscode
-.nextflow.pid

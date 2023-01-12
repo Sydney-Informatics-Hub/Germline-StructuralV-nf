@@ -19,7 +19,7 @@
 
 ## Description 
 
-GermlineStructuralV-nf is a Nextflow pipeline for identifying structural variant events in Illumina short read whole genome sequence data. GermlineStructuralV-nf identifies structural variant and copy number events from BAM files using [Manta](https://github.com/Illumina/manta/blob/master/docs/userGuide/README.md#de-novo-calling), [Smoove](https://github.com/brentp/smoove), and [TIDDIT](https://github.com/SciLifeLab/TIDDIT). Variants are then merged using [SURVIVOR](https://github.com/fritzsedlazeck/SURVIVOR), and annotated by [Variant Effect Predictor](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-0974-4) (VEP). The pipeline is written in Nextflow and uses Singularity to run containerised tools, making it a portable, reproducible, and scalable solution. 
+GermlineStructuralV-nf is a pipeline for identifying structural variant events in human Illumina short read whole genome sequence data. GermlineStructuralV-nf identifies structural variant and copy number events from BAM files using [Manta](https://github.com/Illumina/manta/blob/master/docs/userGuide/README.md#de-novo-calling), [Smoove](https://github.com/brentp/smoove), and [TIDDIT](https://github.com/SciLifeLab/TIDDIT). Variants are then merged using [SURVIVOR](https://github.com/fritzsedlazeck/SURVIVOR), and annotated by [AnnotSV](https://pubmed.ncbi.nlm.nih.gov/29669011/). The pipeline is written in Nextflow and uses Singularity/Docker to run containerised tools.
 
 Structural and copy number detection is challenging. Most structural variant detection tools infer these events from read mapping patterns, which can often resemble sequencing and read alignment artefacts. To address this, GermlineStructuralV-nf employs 3 general purpose structural variant calling tools, which each support a combination of detection methods. Manta, Smoove and TIDDIT use typical detection approaches that consider: 
 
@@ -28,14 +28,12 @@ Structural and copy number detection is challenging. Most structural variant det
 * Read depth profiling 
 * Local de novo assembly  
 
-This approach is currently considered best practice for maximising sensitivty of short read data [Cameron et al. (2019)](https://www.nature.com/articles/s41467-019-11146-4), [Malmoud et al. (2019)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1828-7). By using a combination of tools that employ different methods, we improve our ability to detect different types and sizes of variant events, as described below: 
-
-<INSERT TABLE COMPARING CALLERS > 
+This approach is currently considered the best approach for maximising sensitivty of short read data ([Cameron et al. 2019](https://www.nature.com/articles/s41467-019-11146-4), [Malmoud et al. 2019](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1828-7)). By using a combination of tools that employ different methods, we improve our ability to detect different types and sizes of variant events.
 
 ## Diagram
 
 <p align="center"> 
-<img src="https://user-images.githubusercontent.com/73086054/187623685-133bc241-0187-4c0f-9821-c22ef1415a9a.png" width="80%">
+<img src="https://user-images.githubusercontent.com/73086054/211971740-772796bc-6fb7-43fb-885b-d9cb116bfdd0.png" width="80%">
 </p> 
 
 ## User guide 
@@ -70,9 +68,9 @@ When you run the pipeline, you will use the mandatory `--input` parameter to spe
 To run this pipeline you will need the following reference files:
 
 * Indexed reference genome in FASTA format 
-* [VEP cache](https://asia.ensembl.org/info/docs/tools/vep/script/vep_cache.html#cache) (Optional) 
+* [AnnotSV annotation datasets](https://lbgi.fr/AnnotSV/) (Optional) 
 
-You will need to download and index a copy of the reference genome you would like to use. Reference FASTA files must be accompanied by a .fai index file. If you are working with a species that has a public reference genome, you can download FASTA files from the [Ensembl](https://asia.ensembl.org/info/data/ftp/index.html), [UCSC](https://genome.ucsc.edu/goldenPath/help/ftp.html), or [NCBI](https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/) ftp sites. You can use our [IndexReferenceFasta-nf pipeline](https://github.com/Sydney-Informatics-Hub/IndexReferenceFasta-nf) to generate indexes. 
+You will need to download and index a copy of the reference genome you would like to use. Reference FASTA files must be accompanied by a .fai index file. If you are working with a species that has a public reference genome, you can download FASTA files from the [Ensembl](https://asia.ensembl.org/info/data/ftp/index.html), [UCSC](https://genome.ucsc.edu/goldenPath/help/ftp.html), or [NCBI](https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/) ftp sites. You can use the [IndexReferenceFasta-nf pipeline](https://github.com/Sydney-Informatics-Hub/IndexReferenceFasta-nf) to generate required samtools and bwa indexes. 
 
 When you run the pipeline, you will use the mandatory `--ref` parameter to specify the location and name of the reference.fasta file: 
 
@@ -80,32 +78,38 @@ When you run the pipeline, you will use the mandatory `--ref` parameter to speci
 --ref /path/to/reference.fasta
 ```
 
-If you intend to run the optional step of variant annotation with VEP, you will need to manually download a cache of the VEP database before running the pipeline (if available for your organism). See [these instructions](https://asia.ensembl.org/info/docs/tools/vep/script/vep_cache.html#cache) for how to prepare your data and [Ensembl's VEP ftp site](https://ftp.ensembl.org/pub/release-108/variation/indexed_vep_cache/), for available databases. In short, you will need to do the following: 
+**Download the AnnotSV database and supporting files (optional)** 
 
-**Create a local cache directory** 
+If you choose to run the pipeline with [AnnotSV annotations](https://raw.githubusercontent.com/lgmgeo/AnnotSV/master/README.AnnotSV_3.2.pdf), you currently need to download and prepare the relevant AnnotSV files, manually. The AnnotSV data is very large (>20Gb) so we haven't included it in the AnnotSV container. 
 
-Be aware, the VEP cache requires a lot of disk space, for example the Hg38 108 release database requires ~21G. Because of this it is essential to create this directory somewhere with enough disk space to store it. Create the directory:  
+First, download the AnnotSV database: 
 ```
-mkdir -p <name of cache directory>
-```
-
-**Download a copy of the cache**
-
-Download the cache to your cache directory. For example:  
-```
-wget -P <name of cache directory> ftp://ftp.ensembl.org/pub/release-108/variation/indexed_vep_cache/homo_sapiens_vep_108_GRCh38.tar.gz
+wget https://www.lbgi.fr/~geoffroy/Annotations/Annotations_Human_3.2.1.tar.gz 
 ```
 
-Unzip it: 
-
+Then unzip it and save to a directory of your choosing: 
 ```
-tar xzf homo_sapiens_vep_108_GRCh38.tar.gz
+tar -xf Annotations_Human_3.2.1.tar.gz -C /path/to/AnnotSV
 ```
 
-When you run the pipeline, if you would like to perform variant annotation with VEP, you will use the `--VEPcache` parameter to specify the location and name of the input file: 
-
+You will also need to download the Exomiser supporting data files: 
 ```
---VEPcache /path/to/VEP_cache 
+wget https://www.lbgi.fr/~geoffroy/Annotations/2202_hg19.tar.gz && wget https://data.monarchinitiative.org/exomiser/data/2202_phenotype.zip
+```
+
+Create a directory to house the Exomiser files: 
+```
+mkdir -p Annotations_Human/Annotations_Exomiser/2202
+```
+
+Save the downloaded Exomiser files to your AnnotSV directory: 
+```
+tar -xf 2202_hg19.tar.gz -C /path/to/AnnotSV/Annotations_Human/Annotations_Exomiser/2202/ && unzip 2202_phenotype.zip -d /path/to/AnnotSV/Annotations_Human/Annotations_Exomiser/2202/
+```
+
+And finally (optionally), tidy up: 
+```
+rm -rf Annotations_Human_3.2.1.tar.gz 2202_phenotype.zip 2202_hg19.tar.gz
 ```
 
 ### 3. Clone this repository 
@@ -141,15 +145,33 @@ The most basic run command for this pipeline is:
 nextflow run main.nf --input sample.tsv --ref /path/to/ref 
 ```
 
-By default, this will generate `work` directory, `results` output directory and a `runInfo` run metrics directory in the same location you ran the pipeline from. 
-
-To specify additional optional tool-specific parameters, see what flags are supported by running:
+This will generate `work` directory, `results` output directory and a `runInfo` run metrics directories. To specify additional optional tool-specific parameters, see what flags are supported by running:
 
 ```
 nextflow run main.nf --help 
 ```
 
+**AnnotSV annotations for human samples**
+
+To run the pipeline with the optional AnnotSV annotations, use the following command: 
+
+```
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsv /path/to/annotsv
+```
+
 If for any reason your workflow fails, you are able to resume the workflow from the last successful process with `-resume`. 
+
+### 5. Results 
+
+Once the pipeline is complete, you will find all outputs for each sample in the `results` directory. Within each sample directory there is a subdirectory for each tool run which contains all intermediate files and results generated by each step. A final merged VCF for each sample will be created: `results/$sampleID/survivor/$sampleID_merged.vcf`.  
+
+The following directories will be created: 
+
+* manta: all intermediate files and results generated by Manta. 
+* smoove: all intermediate files and results generated by Smoove. 
+* tiddit: all intermediate files and results generated by Tiddit. 
+* survivor: summary stats, merged multi-caller VCF (final output), merged multi-caller bedpe file.
+* annotsv: full annotations for the all events in the merged multi-callr VCF.  
 
 ## Infrastructure useage and recommendations 
 
@@ -191,9 +213,7 @@ To run this pipeline you must have Nextflow and Singularity installed on your ma
 |BCFtools     |1.15.1    |
 |HTSlib       |1.15.1    |
 |SURVIVOR     |1.0.7     |
-|VEP          |108       |
-|R            |          |
-
+|AnnotSV      |3.2.1     |
 
 ## Additional notes 
 ### Resources 

@@ -1,8 +1,3 @@
-#!/bin/env nextflow
-
-// Enable DSL-2 syntax
-nextflow.enable.dsl=2
-
 // run tiddit structural variant detection
 process tiddit_sv {
 	debug false
@@ -17,11 +12,10 @@ process tiddit_sv {
 	output:
 	tuple val(sampleID), path("Tiddit_${sampleID}_PASSsv.vcf")	, emit: tiddit_vcf
 	tuple val(sampleID), path("${sampleID}_sv.ploidies.tab")	, emit: tiddit_ploidy
-	tuple val(sampleID), path("${sampleID}_sv_tiddit")		, emit: tiddit_workdir
+	tuple val(sampleID), path("${sampleID}_sv_tiddit")			, emit: tiddit_workdir
 	
 	script:
-	// TODO: will need to add optional flags
-	def args = task.ext.args ?: ''
+	// TODO: add optional parameters $args. 
 	"""
 	tiddit \
 		--sv \
@@ -29,8 +23,7 @@ process tiddit_sv {
 		--bam ${bam} \
 		--ref ${params.ref} \
 		-o ${sampleID}_sv \
-		--threads ${task.cpus} \
-		$args
+		--threads ${task.cpus}
 
 	# rename vcf to show its from tiddit 
 	mv ${sampleID}_sv.vcf \

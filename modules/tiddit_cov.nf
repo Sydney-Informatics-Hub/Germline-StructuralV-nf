@@ -1,8 +1,3 @@
-#!/bin/env nextflow
-
-// Enable DSL-2 syntax
-nextflow.enable.dsl=2
-
 // calculate coverage of bam files with tiddit cov
 process tiddit_cov {
 	debug false
@@ -23,10 +18,10 @@ process tiddit_cov {
 	// TODO: will need to add option for additional flags. See manta script for example
 	"""
 	tiddit \
-	--cov \
-	--bam ${bam} \
-	--ref ${params.ref} \
-	-o ${sampleID}_cov \
+		--cov \
+		--bam ${bam} \
+		--ref ${params.ref} \
+		-o ${sampleID}_cov
 	"""
 
 }
