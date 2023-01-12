@@ -28,7 +28,7 @@ Structural and copy number detection is challenging. Most structural variant det
 * Read depth profiling 
 * Local de novo assembly  
 
-This approach is currently considered the best approach for maximising sensitivty of short read data [Cameron et al. (2019)](https://www.nature.com/articles/s41467-019-11146-4), [Malmoud et al. (2019)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1828-7). By using a combination of tools that employ different methods, we improve our ability to detect different types and sizes of variant events.
+This approach is currently considered the best approach for maximising sensitivty of short read data ([Cameron et al. 2019](https://www.nature.com/articles/s41467-019-11146-4), [Malmoud et al. 2019](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1828-7)). By using a combination of tools that employ different methods, we improve our ability to detect different types and sizes of variant events.
 
 ## Diagram
 
