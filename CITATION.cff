@@ -1,0 +1,14 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Samaha"
+    given-names: "Georgina"
+    orcid: "https://orcid.org/0000-0003-0419-1476"
+  - family-names: "Chew"
+    given-names: "Tracy"
+    orcid: "https://orcid.org/0000-0001-9529-7705"
+title: "Germline-StructuralV-nf"
+version: 1.0
+doi: 10.48546/workflowhub.workflow.431.1
+date-released: 2022-12-18
+url: "https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf"
