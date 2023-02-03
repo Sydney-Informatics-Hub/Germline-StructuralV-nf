@@ -229,10 +229,13 @@ samtools idxstats input.bam | cut -f 1
 
 ## Acknowledgements/citations/credits
 ### Authors 
-- Georgie Samaha (Sydney Informatics Hub, University of Sydney)   
+- Georgie Samaha (Sydney Informatics Hub, University of Sydney) 
+- Tracy Chew (Sydney Informatics Hub, University of Sydney)
+- Marina Kennerson (ANZAC Research Institute)
+- Sarah Beecroft (Pawsey Supercomputing Research Centre)
 
 ### Acknowledgements 
-
+- This pipeline was devloped and tested using data provided by the Northcott Neuroscience Laboratory, ANZAC Research Institute and resources provided by the Australian BioCommons 'Bring Your Own Data' platforms project and the Pawsey Supercomputing Research Centre. 
 - This pipeline was built using the [Nextflow DSL2 template](https://github.com/Sydney-Informatics-Hub/Nextflow_DSL2_template).  
 - Documentation was created following the [Australian BioCommons documentation guidelines](https://github.com/AustralianBioCommons/doc_guidelines).  
 
