@@ -12,11 +12,11 @@ process smoove {
 	output:
 	tuple val(sampleID), path("smoove/${sampleID}-smoove.genotyped.vcf.gz")		, emit: smoove_geno
 	tuple val(sampleID), path("smoove/${sampleID}-smoove.genotyped.vcf.gz.csi")	, emit: smoove_geno_csi
-	tuple val(sampleID), path("smoove/${sampleID}.split.bam")					, emit: smoove_split,	optional: true
-	tuple val(sampleID), path("smoove/${sampleID}.split.bam.csi")				, emit: smoove_split_csi,	optional: true
-	tuple val(sampleID), path("smoove/${sampleID}.disc.bam")					, emit: smoove_disc,	optional: true
-	tuple val(sampleID), path("smoove/${sampleID}.disc.bam.csi")				, emit: smoove_disc_csi,	optional: true
-	tuple val(sampleID), path("smoove/${sampleID}.histo")						, emit: smoove_histo,	optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.split.bam")			, emit: smoove_split, optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.split.bam.csi")			, emit: smoove_split_csi, optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.disc.bam")			, emit: smoove_disc, optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.disc.bam.csi")			, emit: smoove_disc_csi, optional: true
+	tuple val(sampleID), path("smoove/${sampleID}.histo")				, emit: smoove_histo, optional: true
 	
 	script:
 	// TODO: add optional parameters $args. 
@@ -24,7 +24,7 @@ process smoove {
 	smoove call -d --name ${sampleID} \
 		--fasta ${params.ref} \
 		--outdir smoove \
-		--processes 1 \
+		--processes ${task.cpus} \
 		--genotype ${bam} 
 	"""
 } 

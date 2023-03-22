@@ -12,7 +12,7 @@ process tiddit_sv {
 	output:
 	tuple val(sampleID), path("Tiddit_${sampleID}_PASSsv.vcf")	, emit: tiddit_vcf
 	tuple val(sampleID), path("${sampleID}_sv.ploidies.tab")	, emit: tiddit_ploidy
-	tuple val(sampleID), path("${sampleID}_sv_tiddit")			, emit: tiddit_workdir
+	tuple val(sampleID), path("${sampleID}_sv_tiddit")		, emit: tiddit_workdir
 	
 	script:
 	// TODO: add optional parameters $args. 
