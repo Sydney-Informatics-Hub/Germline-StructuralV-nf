@@ -1,5 +1,3 @@
-testScripts/
-NOTES
 .nextflow.*
 .nextflow/
 work/
@@ -10,3 +8,6 @@ results/
 Reference
 Annotations_Human
 Benchmarking
+*.o
+*.e
+*.sif
