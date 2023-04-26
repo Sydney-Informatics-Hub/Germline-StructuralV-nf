@@ -36,7 +36,8 @@ Workflow run parameters
 version		: ${params.version}
 input		: ${params.input}
 reference	: ${params.ref}
-annotsv		: ${params.annotsv}
+annotsvDir	: ${params.annotsv}
+annotsvType	: ${params.annotsvType}
 outDir		: ${params.outDir}
 workDir		: ${workflow.workDir}
 
@@ -121,7 +122,7 @@ if ( params.help == true || params.ref == false || params.input == false ){
 
 	// Run AnnotSV (optional)
 	if (params.annotsv) {
-		annotsv(survivor_merge.out.mergedVCF, params.annotsv)}
+		annotsv(survivor_merge.out.mergedVCF, params.annotsv, params.annotsvType)}
 	}}
 
 workflow.onComplete {
