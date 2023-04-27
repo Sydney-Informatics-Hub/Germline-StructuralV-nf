@@ -1,4 +1,4 @@
-// run smoove structural variant detection
+// run annotSV for variant annotation (human, mouse only)
 process annotsv {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/annotsv", mode: 'copy'
@@ -13,13 +13,13 @@ process annotsv {
 	tuple val(sampleID), path("*")
 
 	script: 
-	def type = "${params.annotsvType}"
+	def mode = "${params.annotsvMode}"
 	"""
 	AnnotSV \
 		-SVinputFile ${sampleID}_merged.vcf \
 		-annotationsDir ${params.annotsvDir} \
 		-bedtools bedtools -bcftools bcftools \
-		-annotationMode ${type} \
+		-annotationMode ${mode} \
 		-genomeBuild GRCh38 \
 		-includeCI 1 \
 		-overwrite 1 \

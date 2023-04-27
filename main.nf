@@ -37,7 +37,7 @@ version		: ${params.version}
 input		: ${params.input}
 reference	: ${params.ref}
 annotsvDir	: ${params.annotsvDir}
-annotsvType	: ${params.annotsvType}
+annotsvMode	: ${params.annotsvMode}
 outDir		: ${params.outDir}
 workDir		: ${workflow.workDir}
 
@@ -68,8 +68,8 @@ Optional Arguments:
 	--annotsvDir		Full path to the directory housing the prepared
 				Annotations_human directory for AnnotSV. 
 
-	--annotsvType		Specify FULL, SPLIT, or BOTH annotSV output
-				type (default: BOTH).
+	--annotsvMode		Specify full, split, or both for AnnotSV output
+				mode (default: both).
 
 """.stripIndent()
 }
@@ -125,7 +125,7 @@ if ( params.help == true || params.ref == false || params.input == false ){
 
 	// Run AnnotSV (optional)
 	if (params.annotsvDir) {
-		annotsv(survivor_merge.out.mergedVCF, params.annotsvDir, params.annotsvType)}
+		annotsv(survivor_merge.out.mergedVCF, params.annotsvDir, params.annotsvMode)}
 	}}
 
 workflow.onComplete {
