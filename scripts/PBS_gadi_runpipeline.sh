@@ -31,6 +31,6 @@ export NXF_SINGULARITY_CACHEDIR=/scratch/$PROJECT/$(whoami)/singularity
 # Run the pipeline (remove annotsv if not needed)
 nextflow run main.nf \
 	--input ${samples} -profile gadi \
-	--ref ${ref} --annotsvDir ${annotsv} \
+	--ref ${ref} --annotsvDir ${annotsv} --annotsvType full \
 	 --whoami $(whoami) --pbs_account $PROJECT \
 	--outDir ${outDir}
