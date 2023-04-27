@@ -16,20 +16,21 @@
 # See: https://opus.nci.org.au/display/DAE/Nextflow
 # See: https://opus.nci.org.au/display/Help/Singularity
 module load singularity
-module load nextflow
+module load nextflow/23.04.1
+module load java
 
 # Fill in these variables for your run
 ref=/scratch/er01/gs5517/workflowDev/Reference/hs38DH.fasta #full path to your reference.fasta
-samples=/scratch/er01/gs5517/workflowDev/Germline-StructuralV-nf/platinumgenomes.tsv #samplesheet.tsv #platinumgenomes_1.tsv #full path to your input.tsv file
-annotSV=/scratch/er01/gs5517/workflowDev/Germline-StructuralV-nf/AnnotSV #full path to directory housing Annotations_Human directory
+samples=/scratch/er01/gs5517/workflowDev/Germline-StructuralV-nf/samplesheet.tsv #platinumgenomes_1.tsv #full path to your input.tsv file
+annotsv=/scratch/er01/gs5517/workflowDev/Germline-StructuralV-nf/AnnotSV #full path to directory housing Annotations_Human directory
 outDir=/scratch/er01/gs5517/workflowDev/Germline-StructuralV-nf/Benchmarking/results #full path for results directory
 
-# set singularity cache dir 
+# set singularity cache dir
 export NXF_SINGULARITY_CACHEDIR=/scratch/$PROJECT/$(whoami)/singularity
 
 # Run the pipeline (remove annotsv if not needed)
 nextflow run main.nf \
-	--input ${samples} \
-	--ref ${ref} --annotsv ${annotSV} \
-	-profile gadi --whoami $(whoami) --pbs_account $PROJECT \
+	--input ${samples} -profile gadi \
+	--ref ${ref} --annotsvDir ${annotsv} \
+	 --whoami $(whoami) --pbs_account $PROJECT \
 	--outDir ${outDir}

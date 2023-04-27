@@ -6,25 +6,23 @@ process annotsv {
 
 	input:
 	tuple val(sampleID), path(mergedVCF)
-	path("${params.annotsv}")
-	val(${params.annotsvType})
+	path "${params.annotsvDir}"
+	val annotsvType
 
 	output:
-	tuple val(sampleID), path("*_AnnotSV")
+	tuple val(sampleID), path("*")
 
-	script:
-	def args = task.ext.args ?: '' 
-	def type = ${params.annotsvType}
+	script: 
+	def type = "${params.annotsvType}"
 	"""
 	AnnotSV \
 		-SVinputFile ${sampleID}_merged.vcf \
-		-annotationsDir ${params.annotsv} \
+		-annotationsDir ${params.annotsvDir} \
 		-bedtools bedtools -bcftools bcftools \
 		-annotationMode ${type} \
 		-genomeBuild GRCh38 \
 		-includeCI 1 \
 		-overwrite 1 \
-		${args} \
 		-outputFile ${sampleID}_AnnotSV.tsv
 	"""
 }
