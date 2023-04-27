@@ -223,7 +223,7 @@ To run this pipeline you must have Nextflow and Singularity installed on your ma
 |Singularity  |          |
 |Manta        |1.6.0     |
 |Smoove       |0.2.7     |
-|TIDDIT       |3.3.1     |
+|TIDDIT       |3.6.0     |
 |BCFtools     |1.15.1    |
 |HTSlib       |1.15.1    |
 |SURVIVOR     |1.0.7     |
