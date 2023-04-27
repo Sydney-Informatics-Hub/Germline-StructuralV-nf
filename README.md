@@ -159,8 +159,14 @@ nextflow run main.nf --help
 To run the pipeline with the optional AnnotSV annotations, use the following command: 
 
 ```
-nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsv /path/to/annotsv
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv 
 ```
+
+AnnotSV runs in default annotation mode, providing both (full and split) annotations. See [AnnotSV documentation](https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_3.3.4.pdf) for details. To override this default use the --annotsvType flag in your run command:
+
+```
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvType {both/split/full}
+```  
 
 If for any reason your workflow fails, you are able to resume the workflow from the last successful process with `-resume`. 
 
@@ -198,7 +204,7 @@ Coming soon!
 |Container          | See Component tools               |
 |Install method     | NA                                |
 |GitHub             | https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf                            |
-|bio.tools 	        | NA                                |
+|bio.tools          | NA                                |
 |BioContainers      | NA                                | 
 |bioconda           | NA                                |
 
