@@ -40,6 +40,7 @@ annotsvDir	: ${params.annotsvDir}
 annotsvMode	: ${params.annotsvMode}
 outDir		: ${params.outDir}
 workDir		: ${workflow.workDir}
+AnnotSV flags	: ${params.extraAnnotsvFlags}
 
 ===================================================================
  """
@@ -70,6 +71,9 @@ Optional Arguments:
 
 	--annotsvMode		Specify full, split, or both for AnnotSV output
 				mode (default: both).
+	
+	--extraAnnotsvFlags	Additionally specify any valid AnnotSV flags. For 
+				example: --extraAnnotsvFlags '-SVminSize 50 -vcf 1'. 
 
 """.stripIndent()
 }

@@ -156,16 +156,21 @@ nextflow run main.nf --help
 
 **AnnotSV annotations for human samples**
 
-To run the pipeline with the optional AnnotSV annotations, use the following command: 
+To run the pipeline with the optional AnnotSV annotations, use the following command to direct Nextflow to your previously prepared AnnotSV resource directory: 
 
 ```
 nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv 
 ```
 
-AnnotSV runs in default annotation mode, providing both (full and split) annotations. See [AnnotSV documentation](https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_3.3.4.pdf) for details. To override this default use the --annotsvDir flag in your run command:
+You can override the default annotation mode (both) and instead apply split or full annotations. See [AnnotSV documentation](https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_3.3.4.pdf) for details. To override this default use the --annotsvDir flag in your run command:
 
 ```
-nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvMode {both|split|full}
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvMode {both|split|full} 
+```
+
+If you need to specify any additional flags supported by AnnotSV, use the `--extraAnnotsvFlags` flag and add one or more flag inside single quotes. If using multiple flags, they should be separated by a space:
+```
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvMode full --extraAnnotsvFlags '-SVminSize 100 -vcf 1'
 ```  
 
 If for any reason your workflow fails, you are able to resume the workflow from the last successful process with `-resume`. 
