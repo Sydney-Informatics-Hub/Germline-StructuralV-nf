@@ -6,14 +6,23 @@ process annotsv {
 
 	input:
 	tuple val(sampleID), path(mergedVCF)
-	path "${params.annotsvDir}"
-	val annotsvType
+	path annotsvDir
+	val annotsvMode
 
 	output:
-	tuple val(sampleID), path("*")
+	tuple val(sampleID), path("*_AnnotSV")
 
 	script: 
 	def mode = "${params.annotsvMode}"
+	def outputFile = null
+	    if (mode == 'full') {
+               outputFile = "${sampleID}_full_AnnotSV.tsv"
+            } else if (mode == 'split') {
+               outputFile = "${sampleID}_split_AnnotSV.tsv"
+            } else if (mode == 'both') {
+               outputFile = "${sampleID}_both_AnnotSV.tsv"
+            } else {
+               throw new RuntimeException("Invalid option for --annotSV: ${mode}")}
 	"""
 	AnnotSV \
 		-SVinputFile ${sampleID}_merged.vcf \
@@ -23,6 +32,6 @@ process annotsv {
 		-genomeBuild GRCh38 \
 		-includeCI 1 \
 		-overwrite 1 \
-		-outputFile ${sampleID}_AnnotSV.tsv
+		-outputFile ${outputFile}
 	"""
 }
