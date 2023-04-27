@@ -162,10 +162,10 @@ To run the pipeline with the optional AnnotSV annotations, use the following com
 nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv 
 ```
 
-AnnotSV runs in default annotation mode, providing both (full and split) annotations. See [AnnotSV documentation](https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_3.3.4.pdf) for details. To override this default use the --annotsvType flag in your run command:
+AnnotSV runs in default annotation mode, providing both (full and split) annotations. See [AnnotSV documentation](https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_3.3.4.pdf) for details. To override this default use the --annotsvDir flag in your run command:
 
 ```
-nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvType {both/split/full}
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvMode {both|split|full}
 ```  
 
 If for any reason your workflow fails, you are able to resume the workflow from the last successful process with `-resume`. 
