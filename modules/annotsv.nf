@@ -1,4 +1,4 @@
-// run smoove structural variant detection
+// run annotSV for variant annotation (human, mouse only)
 process annotsv {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/annotsv", mode: 'copy'
@@ -6,22 +6,32 @@ process annotsv {
 
 	input:
 	tuple val(sampleID), path(mergedVCF)
-	path("${params.annotsv}")
+	path annotsvDir
+	val annotsvMode
 
 	output:
 	tuple val(sampleID), path("*_AnnotSV")
 
-	script:
-	// TODO: add optional parameters $args. 
+	script: 
+	def mode = "${params.annotsvMode}"
+	def outputFile = null
+	    if (mode == 'full') {
+               outputFile = "${sampleID}_full_AnnotSV.tsv"
+            } else if (mode == 'split') {
+               outputFile = "${sampleID}_split_AnnotSV.tsv"
+            } else if (mode == 'both') {
+               outputFile = "${sampleID}_both_AnnotSV.tsv"
+            } else {
+               throw new RuntimeException("Invalid option for --annotSV: ${mode}")}
 	"""
 	AnnotSV \
 		-SVinputFile ${sampleID}_merged.vcf \
-		-annotationsDir ${params.annotsv} \
+		-annotationsDir ${params.annotsvDir} \
 		-bedtools bedtools -bcftools bcftools \
-		-annotationMode full \
+		-annotationMode ${mode} \
 		-genomeBuild GRCh38 \
 		-includeCI 1 \
 		-overwrite 1 \
-		-outputFile ${sampleID}_AnnotSV.tsv
+		-outputFile ${outputFile}
 	"""
 }

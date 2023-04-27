@@ -36,7 +36,8 @@ Workflow run parameters
 version		: ${params.version}
 input		: ${params.input}
 reference	: ${params.ref}
-annotsv		: ${params.annotsv}
+annotsvDir	: ${params.annotsvDir}
+annotsvMode	: ${params.annotsvMode}
 outDir		: ${params.outDir}
 workDir		: ${workflow.workDir}
 
@@ -64,8 +65,11 @@ Optional Arguments:
 	--intervals		Full path and name of the intervals file for Manta 
 				(bed format).
 
-	--annotsv		Full path to the directory housing the prepared
+	--annotsvDir		Full path to the directory housing the prepared
 				Annotations_human directory for AnnotSV. 
+
+	--annotsvMode		Specify full, split, or both for AnnotSV output
+				mode (default: both).
 
 """.stripIndent()
 }
@@ -120,8 +124,8 @@ if ( params.help == true || params.ref == false || params.input == false ){
 	survivor_summary(survivor_merge.out.mergedVCF)
 
 	// Run AnnotSV (optional)
-	if (params.annotsv) {
-		annotsv(survivor_merge.out.mergedVCF, params.annotsv)}
+	if (params.annotsvDir) {
+		annotsv(survivor_merge.out.mergedVCF, params.annotsvDir, params.annotsvMode)}
 	}}
 
 workflow.onComplete {
