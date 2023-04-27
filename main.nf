@@ -40,6 +40,7 @@ annotsvDir	: ${params.annotsvDir}
 annotsvMode	: ${params.annotsvMode}
 outDir		: ${params.outDir}
 workDir		: ${workflow.workDir}
+AnnotSV flags	: ${params.extraAnnotsvFlags}
 
 ===================================================================
  """
