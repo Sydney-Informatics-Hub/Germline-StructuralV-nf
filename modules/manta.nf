@@ -20,7 +20,7 @@ process manta {
 	tuple val(sampleID), path("manta/Manta_${sampleID}.diploidSV_converted.vcf.gz.tbi")		, emit: manta_diploid_convert_tbi
 
 	script:
-	// TODO: add optional parameters $args. 
+	def extraArgs = params.extraMantaFlags ?: ''
 	def intervals = params.intervals ? "--callRegions $params.intervals" : ''
 	"""
 	# configure manta SV analysis workflow
@@ -28,7 +28,7 @@ process manta {
 		--normalBam ${bam} \
 		--referenceFasta ${params.ref} \
 		--runDir manta \
-		$intervals
+		${intervals} ${extraArgs}
 
 	# run SV detection 
 	manta/runWorkflow.py -m local -j ${task.cpus}

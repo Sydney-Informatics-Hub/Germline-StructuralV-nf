@@ -15,13 +15,13 @@ process tiddit_cov {
 	tuple val(sampleID), path("*.bed")
 	
 	script:
-	// TODO: will need to add option for additional flags. See manta script for example
+	def extraArgs = params.extraTidditCovFlags ?: ''
 	"""
 	tiddit \
 		--cov \
 		--bam ${bam} \
 		--ref ${params.ref} \
-		-o ${sampleID}_cov
+		-o ${sampleID}_cov  ${extraArgs}
 	"""
 
 }

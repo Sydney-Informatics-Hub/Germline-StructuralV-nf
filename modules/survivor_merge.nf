@@ -9,15 +9,21 @@ process survivor_merge {
 	tuple val(sampleID), path(mergeFile)
 
 	output:
+	tuple val(sampleID), path("${sampleID}_survivor.txt"), emit: mergeFile
 	tuple val(sampleID), path("${sampleID}_merged.vcf"), emit: mergedVCF
 
 	script:
-	// TODO turn $mergeFile variable into input file 
+	// for zero explainer see https://github.com/fritzsedlazeck/SURVIVOR/issues/162 
 	"""
 	echo ${mergeFile} | xargs -n1 > ${sampleID}_survivor.txt
 
 	SURVIVOR merge ${sampleID}_survivor.txt \
-		1000 1 0 0 0 30 \
+		${params.survivorMaxDist} \
+		${params.survivorConsensus} \
+		${params.survivorType} \
+		${params.survivorStrand} \
+		0 \
+		${params.survivorSize} \
 		${sampleID}_merged.vcf
 	"""
 }

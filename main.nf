@@ -33,14 +33,29 @@ Log issues	@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/i
 Workflow run parameters 
 ===================================================================
 
-version		: ${params.version}
-input		: ${params.input}
-reference	: ${params.ref}
-annotsvDir	: ${params.annotsvDir}
-annotsvMode	: ${params.annotsvMode}
-outDir		: ${params.outDir}
-workDir		: ${workflow.workDir}
-AnnotSV flags	: ${params.extraAnnotsvFlags}
+ version          : ${params.version}
+ input            : ${params.input}
+ reference        : ${params.ref}
+ manta intervals  : ${params.intervals}
+ max merge dist   : ${params.survivorMaxDist}
+ caller consensus : ${params.survivorConsensus}
+ type agreement   : ${params.survivorType}
+ strand agreement : ${params.survivorStrand}
+ minMerge size    : ${params.survivorSize} 
+ annotsvDir       : ${params.annotsvDir}
+ annotsvMode      : ${params.annotsvMode}
+ outDir           : ${params.outDir}
+ workDir          : ${workflow.workDir}
+
+===================================================================
+Extra flags
+===================================================================
+
+ manta flags      : ${params.extraMantaFlags}
+ smoove flags     : ${params.extraSmooveFlags}
+ tiddit cov flags : ${params.extraTidditCovFlags}
+ tiddit SV flags  : ${params.extraTidditSvFlags}
+ annotSV flags    : ${params.extraAnnotsvFlags}
 
 ===================================================================
  """
@@ -57,21 +72,49 @@ Required Arguments:
 
 	--input			Full path and name of sample input file (tsv format).
 
+
 	--ref			Full path and name of reference genome (fasta format).
 
 Optional Arguments:
 
 	--outDir		Full path and name of results directory. 
 
+
 	--intervals		Full path and name of the intervals file for Manta 
 				(bed format).
+
+	--survivorMaxDist	Maximum distance between SVs to merge (default: 1000bp)
+
+
+	--survivorConsensus	Number of supportive callers require to report event 
+				(default: 1).
+
+	--survivorType		Requirement for callers to agree on event type before
+				merging calls (default: yes[1])
+
+	--survivorStrand	Requirement for callers to identify event on same
+				strand before merging calls (default: yes[1])
+
+	--survivorSize		Minimum size (bp) event to report (default 40bp)
 
 	--annotsvDir		Full path to the directory housing the prepared
 				Annotations_human directory for AnnotSV. 
 
 	--annotsvMode		Specify full, split, or both for AnnotSV output
 				mode (default: both).
+
+        --extraMantaFlags       Additionally specify any valid Manta flags. 
+
+
+        --extraSmooveFlags      Additionally specify any valid Smoove flags.
+
+
+        --extraTidditSvFlags    Additionally specify any valid Tiddit SV flags.
+
+
+        --extraTidditCovFlags   Additionally specify any valid Tiddit Cov flags.
 	
+
 	--extraAnnotsvFlags	Additionally specify any valid AnnotSV flags. For 
 				example: --extraAnnotsvFlags '-SVminSize 50 -vcf 1'. 
 
