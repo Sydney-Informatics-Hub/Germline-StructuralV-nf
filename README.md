@@ -154,21 +154,38 @@ This will generate `work` directory, `results` output directory and a `runInfo` 
 nextflow run main.nf --help 
 ```
 
+**Customising the workflow**
+
+By default the workflow will merge events together that are supported by >1 SV caller (Tiddit, Smoove, Manta), are a maximum distance of 1kb apart, and at least 40bp long. By default, callers have to agree on the type and strand to merge events. All of these can be overridden using the following flags:
+
+* `--survivorMaxDist`: Maximum distance between events to merge. Default: 1000. 
+* `--survivorConsensus` Number of callers required to report a call. Default: 1. Change to 2 or 3 to require more stringent reports for 2 or 3 caller support, respectively. 
+* `--survivorType`: SV type consensus. Default: callers must agree (1). Change to 0 to remove requirement. 
+* `--survivorStrand`: SV strand consensus. Default: callers must agree (1). Change to 0 to remove requirement.
+* `--survivorSize`: Minimum SV size (bp) to report. Default: 30.
+
+If you need to specify any additional flags supported by [Manta](https://github.com/Illumina/manta/blob/master/docs/userGuide/README.md), use the `--extraMantaFlags` flag and add one or more flag inside single quotes. If using multiple flags, they should be separated by a space. 
+
+If you need to specify any additional flags supported by [Smoove](https://github.com/brentp/smoove), use the `--extraSmooveFlags` flag and add one or more flag inside single quotes. If using multiple flags, they should be separated by a space.
+
+If you need to specify any additional flags supported by [Tiddit sv](https://github.com/SciLifeLab/TIDDIT#the-sv-module) or the [Tiddit cov](https://github.com/SciLifeLab/TIDDIT#the-cov-module), use the `--extraTidditSvFlags` or `--extraTidditCovFlags` flag respectively and add one or more flag inside single quotes. If using multiple flags, they should be separated by a space.
+
 **AnnotSV annotations for human samples**
 
-To run the pipeline with the optional AnnotSV annotations, use the following command to direct Nextflow to your previously prepared AnnotSV resource directory: 
+To run the pipeline with the optional AnnotSV annotations, use the following command to direct Nextflow to your previously prepared AnnotSV resource directory:
 
 ```
-nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv 
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv
 ```
 
 You can override the default annotation mode (both) and instead apply split or full annotations. See [AnnotSV documentation](https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_3.3.4.pdf) for details. To override this default use the --annotsvDir flag in your run command:
 
 ```
-nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvMode {both|split|full} 
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvMode {both|split|full}
 ```
 
 If you need to specify any additional flags supported by AnnotSV, use the `--extraAnnotsvFlags` flag and add one or more flag inside single quotes. If using multiple flags, they should be separated by a space:
+
 ```
 nextflow run main.nf --input sample.tsv --ref /path/to/ref --annotsvDir /path/to/annotsv --annotsvMode full --extraAnnotsvFlags '-SVminSize 100 -vcf 1'
 ```  
