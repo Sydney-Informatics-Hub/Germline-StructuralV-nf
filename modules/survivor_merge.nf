@@ -23,8 +23,7 @@ process survivor_merge {
 		${params.survivorType} \
 		${params.survivorStrand} \
 		0 \
-		${params.survivorSize} 
-		#1000 1 0 0 0 30 \
+		${params.survivorSize} \
 		${sampleID}_merged.vcf
 	"""
 }
