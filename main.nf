@@ -83,6 +83,20 @@ Optional Arguments:
 	--intervals		Full path and name of the intervals file for Manta 
 				(bed format).
 
+	--survivorMaxDist	Maximum distance between SVs to merge (default: 1000bp)
+
+
+	--survivorConsensus	Number of supportive callers require to report event 
+				(default: 1).
+
+	--survivorType		Requirement for callers to agree on event type before
+				merging calls (default: yes[1])
+
+	--survivorStrand	Requirement for callers to identify event on same
+				strand before merging calls (default: yes[1])
+
+	--survivorSize		Minimum size (bp) event to report (default 40bp)
+
 	--annotsvDir		Full path to the directory housing the prepared
 				Annotations_human directory for AnnotSV. 
 
