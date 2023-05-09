@@ -19,13 +19,13 @@ process smoove {
 	tuple val(sampleID), path("smoove/${sampleID}.histo")				, emit: smoove_histo, optional: true
 	
 	script:
-	// TODO: add optional parameters $args. 
+	def extraArgs = params.extraSmooveFlags ?: ''
 	"""
 	smoove call -d --name ${sampleID} \
 		--fasta ${params.ref} \
 		--outdir smoove \
 		--processes ${task.cpus} \
-		--genotype ${bam} 
+		--genotype ${bam} ${extraArgs}
 	"""
 } 
 

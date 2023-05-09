@@ -15,7 +15,7 @@ process tiddit_sv {
 	tuple val(sampleID), path("${sampleID}_sv_tiddit")		, emit: tiddit_workdir
 	
 	script:
-	// TODO: add optional parameters $args. 
+	def extraArgs = params.extraTidditSvFlags ?: ''
 	"""
 	tiddit \
 		--sv \
@@ -23,7 +23,7 @@ process tiddit_sv {
 		--bam ${bam} \
 		--ref ${params.ref} \
 		-o ${sampleID}_sv \
-		--threads ${task.cpus}
+		--threads ${task.cpus} ${extraArgs}
 
 	# rename vcf to show its from tiddit 
 	mv ${sampleID}_sv.vcf \
