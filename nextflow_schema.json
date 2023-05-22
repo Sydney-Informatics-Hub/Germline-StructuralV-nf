@@ -1,0 +1,218 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/GermlineStructuralV-nf/master/nextflow_schema.json",
+  "title": "GermlineStructuralV-nf pipeline parameters",
+  "description": "Multi-caller germline structural variant calling pipeline",
+  "type": "object",
+  "definitions": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input data and save output data.",
+      "required": ["input"],
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "file-path",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$",
+          "schema": "assets/schema_input.json",
+          "description": "Path to tab-separated file containing information about the samples in the experiment.",
+          "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+          "fa_icon": "fas fa-file-csv"
+        },
+        "outDir": {
+          "type": "string",
+          "default": "./results",
+          "description": "Path to output directory location.",
+          "format": "directory-path"
+        }
+      }
+    },
+    "reference_data": {
+      "title": "Reference data",
+      "type": "object",
+      "description": "Define paths to reference genome files",
+      "default": "",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "default": "false",
+          "description": "Path to reference genome in FASTA format. Pipeline assumes index files are housed in the same directory.",
+          "format": "file-path"
+        },
+        "intervals": {
+          "type": "string",
+          "default": "false",
+          "description": "Full path and name of the intervals file for Manta (bed format).",
+          "format": "file-path"
+        }
+      },
+      "required": ["ref"]
+    },
+    "vcf_merging_options": {
+      "title": "VCF merging options",
+      "type": "object",
+      "description": "Settings for merging caller-VCFs per sample with SURVIVOR",
+      "default": "",
+      "properties": {
+        "survivorConsensus": {
+          "type": "integer",
+          "default": 1,
+          "description": "Number of supportive callers require to report event.",
+          "enum": [0, 1]
+        },
+        "survivorType": {
+          "type": "integer",
+          "default": 1,
+          "description": "Requirement for callers to agree on event type before merging calls (default: yes[1])",
+          "enum": [0, 1]
+        },
+        "survivorMaxDist": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Maximum distance between SVs to merge"
+        },
+        "survivorSize": {
+          "type": "integer",
+          "default": 40,
+          "description": "Minimum size (bp) event to report"
+        },
+        "survivorStrand": {
+          "type": "integer",
+          "default": 1,
+          "description": "Requirement for callers to identify event on same strand before merging calls (default: yes[1])",
+          "enum": [0, 1]
+        }
+      }
+    },
+    "extra_arguments": {
+      "title": "Extra arguments",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "extraMantaFlags": {
+          "type": "string",
+          "default": "false",
+          "description": "Additionally specify any valid Manta flags"
+        },
+        "extraSmooveFlags": {
+          "type": "string",
+          "default": "false",
+          "description": "Additionally specify any valid Smoove flags"
+        },
+        "extraTidditSvFlags": {
+          "type": "string",
+          "default": "false",
+          "description": "Additionally specify any valid Tiddit SV flags"
+        },
+        "extraTidditCovFlags": {
+          "type": "string",
+          "default": "false",
+          "description": "Additionally specify any valid Tiddit Cov flags"
+        },
+        "extraAnnotsvFlags": {
+          "type": "string",
+          "default": "false",
+          "description": "Additionally specify any valid AnnotSV flags"
+        }
+      }
+    },
+    "annotation_options": {
+      "title": "Annotation options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "annotsvMode": {
+          "type": "string",
+          "default": "both",
+          "description": "Specify full, split, or both for AnnotSV output mode"
+        },
+        "annotsvDir": {
+          "type": "string",
+          "default": "false",
+          "description": "Full path to the directory housing the prepared Annotations_human directory for AnnotSV"
+        }
+      }
+    },
+    "generic_options": {
+      "title": "Generic options",
+      "type": "object",
+      "fa_icon": "fas fa-file-import",
+      "description": "Less common options for the pipeline, typically set in a config file.",
+      "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+      "properties": {
+        "help": {
+          "type": "boolean",
+          "description": "Display help text.",
+          "fa_icon": "fas fa-question-circle",
+          "hidden": true
+        },
+        "version": {
+          "type": "boolean",
+          "description": "Display version and exit.",
+          "fa_icon": "fas fa-question-circle",
+          "hidden": true
+        },
+        "bcftools__container": {
+          "type": "string",
+          "default": "quay.io/biocontainers/bcftools:1.15.1--hfe4b78e_1",
+          "hidden": true
+        },
+        "mulled__container": {
+          "type": "string",
+          "default": "quay.io/biocontainers/mulled-v2-40295ae41112676b05b649e513fe7000675e9b84:0b4be2c719f99f44df34be7b447b287bb7f86e01-0",
+          "hidden": true
+        },
+        "survivor__container": {
+          "type": "string",
+          "default": "quay.io/biocontainers/survivor:1.0.7--hd03093a_2",
+          "hidden": true
+        },
+        "smoove__container": {
+          "type": "string",
+          "default": "brentp/smoove:v0.2.7",
+          "hidden": true
+        },
+        "annotsv__container": {
+          "type": "string",
+          "default": "sydneyinformaticshub/annotsv:3.2.1",
+          "hidden": true
+        },
+        "manta__container": {
+          "type": "string",
+          "default": "quay.io/biocontainers/manta:1.6.0--h9ee0642_2",
+          "hidden": true
+        },
+        "tiddit__container": {
+          "type": "string",
+          "default": "quay.io/biocontainers/tiddit:3.6.0--py310hc2b7f4b_0",
+          "hidden": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/input_output_options"
+    },
+    {
+      "$ref": "#/definitions/reference_data"
+    },
+    {
+      "$ref": "#/definitions/vcf_merging_options"
+    },
+    {
+      "$ref": "#/definitions/extra_arguments"
+    },
+    {
+      "$ref": "#/definitions/annotation_options"
+    },
+    {
+      "$ref": "#/definitions/generic_options"
+    }
+  ]
+}
