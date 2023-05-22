@@ -15,8 +15,6 @@
         "input": {
           "type": "string",
           "format": "file-path",
-          "mimetype": "text/csv",
-          "pattern": "^\\S+\\.csv$",
           "schema": "assets/schema_input.json",
           "description": "Path to tab-separated file containing information about the samples in the experiment.",
           "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
@@ -33,20 +31,20 @@
     "reference_data": {
       "title": "Reference data",
       "type": "object",
-      "description": "Define paths to reference genome files",
+      "description": "Reference genome files required for SV calling",
       "default": "",
       "properties": {
         "ref": {
           "type": "string",
-          "default": "false",
           "description": "Path to reference genome in FASTA format. Pipeline assumes index files are housed in the same directory.",
-          "format": "file-path"
+          "format": "file-path",
+          "default": "null"
         },
         "intervals": {
           "type": "string",
-          "default": "false",
           "description": "Full path and name of the intervals file for Manta (bed format).",
-          "format": "file-path"
+          "format": "file-path",
+          "default": "null"
         }
       },
       "required": ["ref"]
@@ -95,28 +93,28 @@
       "properties": {
         "extraMantaFlags": {
           "type": "string",
-          "default": "false",
-          "description": "Additionally specify any valid Manta flags"
+          "description": "Additionally specify any valid Manta flags",
+          "default": "null"
         },
         "extraSmooveFlags": {
           "type": "string",
-          "default": "false",
-          "description": "Additionally specify any valid Smoove flags"
+          "description": "Additionally specify any valid Smoove flags",
+          "default": "null"
         },
         "extraTidditSvFlags": {
           "type": "string",
-          "default": "false",
-          "description": "Additionally specify any valid Tiddit SV flags"
+          "description": "Additionally specify any valid Tiddit SV flags",
+          "default": "null"
         },
         "extraTidditCovFlags": {
           "type": "string",
-          "default": "false",
-          "description": "Additionally specify any valid Tiddit Cov flags"
+          "description": "Additionally specify any valid Tiddit Cov flags",
+          "default": "null"
         },
         "extraAnnotsvFlags": {
           "type": "string",
-          "default": "false",
-          "description": "Additionally specify any valid AnnotSV flags"
+          "description": "Additionally specify any valid AnnotSV flags",
+          "default": "null"
         }
       }
     },
@@ -133,8 +131,8 @@
         },
         "annotsvDir": {
           "type": "string",
-          "default": "false",
-          "description": "Full path to the directory housing the prepared Annotations_human directory for AnnotSV"
+          "description": "Full path to the directory housing the prepared Annotations_human directory for AnnotSV",
+          "default": "null"
         }
       }
     },
@@ -152,10 +150,11 @@
           "hidden": true
         },
         "version": {
-          "type": "boolean",
+          "type": "string",
           "description": "Display version and exit.",
           "fa_icon": "fas fa-question-circle",
-          "hidden": true
+          "hidden": true,
+          "default": "1.0.0"
         },
         "bcftools__container": {
           "type": "string",
