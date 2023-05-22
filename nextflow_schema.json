@@ -31,6 +31,7 @@
     "reference_data": {
       "title": "Reference data",
       "type": "object",
+      "fa_icon": "fas fa-dna",
       "description": "Reference genome files required for SV calling",
       "default": "",
       "properties": {
@@ -52,6 +53,7 @@
     "vcf_merging_options": {
       "title": "VCF merging options",
       "type": "object",
+      "fa_icon": "fas fa-merge",
       "description": "Settings for merging caller-VCFs per sample with SURVIVOR",
       "default": "",
       "properties": {
@@ -86,9 +88,10 @@
       }
     },
     "extra_arguments": {
-      "title": "Extra arguments",
+      "title": "Additional flags",
       "type": "object",
-      "description": "",
+      "fa_icon": "fas fa-flag",
+      "description": "Additional flags to be applied to any of the callers or AnnotSV",
       "default": "",
       "properties": {
         "extraMantaFlags": {
@@ -121,6 +124,7 @@
     "annotation_options": {
       "title": "Annotation options",
       "type": "object",
+      "fa_icon": "fas fa-file-pen",
       "description": "",
       "default": "",
       "properties": {
