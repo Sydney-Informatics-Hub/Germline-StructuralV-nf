@@ -2,7 +2,6 @@
 process annotsv {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/annotsv", mode: 'copy'
-	container "${params.annotsv__container}"
 
 	input:
 	tuple val(sampleID), path(mergedVCF)

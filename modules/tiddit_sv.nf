@@ -2,7 +2,6 @@
 process tiddit_sv {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
-	container "${params.tiddit__container}"
 
 	input:
 	tuple val(sampleID), file(bam), file(bai)
