@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -P er01
+#PBS -P <project>
 #PBS -N pullContainers
 #PBS -l walltime=02:00:00
 #PBS -l ncpus=1
@@ -8,7 +8,7 @@
 #PBS -W umask=022
 #PBS -q copyq
 #PBS -l wd
-#PBS -l storage=scratch/er01+gdata/er01
+#PBS -l storage=scratch/<project>+gdata/<project>
 
 module load singularity
 
