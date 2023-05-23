@@ -2,7 +2,6 @@
 process survivor_merge {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/survivor", mode: 'copy'
-	container "${params.survivor__container}"
 		
 	input:
 	//tuple val(sampleID), path(mergelist)

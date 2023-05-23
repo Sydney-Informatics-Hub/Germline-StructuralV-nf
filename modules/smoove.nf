@@ -2,7 +2,6 @@
 process smoove {
 	debug false
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
-	container "${params.smoove__container}"
 
 	input:
 	tuple val(sampleID), file(bam), file(bai)
@@ -33,7 +32,6 @@ process smoove {
 process rehead_smoove {
 	debug false 
 	publishDir "${params.outDir}/${sampleID}/smoove", mode: 'copy'
-	container "${params.bcftools__container}" 
 
 	input:
 	tuple val(sampleID), path(smoove_geno)

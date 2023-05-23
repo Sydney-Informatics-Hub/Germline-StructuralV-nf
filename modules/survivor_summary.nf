@@ -2,7 +2,6 @@
 process survivor_summary {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/survivor", mode: 'copy'
-	container "${params.survivor__container}"
 
 	input:
 	tuple val(sampleID), path(mergedVCF)
@@ -26,7 +25,6 @@ process survivor_summary {
 process survivor_venn {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/survivor", mode: 'copy'
-	container "${params.mulled__container}"
 
 	input:
 	tuple val(sampleID), path(mergedVCF)

@@ -103,20 +103,15 @@ Optional Arguments:
 	--annotsvMode		Specify full, split, or both for AnnotSV output
 				mode (default: both).
 
-        --extraMantaFlags       Additionally specify any valid Manta flags. 
+	--extraMantaFlags	Additionally specify any valid Manta flags. 
 
+	--extraSmooveFlags	Additionally specify any valid Smoove flags.
 
-        --extraSmooveFlags      Additionally specify any valid Smoove flags.
+	--extraTidditSvFlags	Additionally specify any valid Tiddit SV flags.
 
+	--extraTidditCovFlags   Additionally specify any valid Tiddit Cov flags.
 
-        --extraTidditSvFlags    Additionally specify any valid Tiddit SV flags.
-
-
-        --extraTidditCovFlags   Additionally specify any valid Tiddit Cov flags.
-	
-
-	--extraAnnotsvFlags	Additionally specify any valid AnnotSV flags. For 
-				example: --extraAnnotsvFlags '-SVminSize 50 -vcf 1'. 
+	--extraAnnotsvFlags	Additionally specify any valid AnnotSV flags.
 
 """.stripIndent()
 }

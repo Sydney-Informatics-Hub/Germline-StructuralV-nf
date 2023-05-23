@@ -2,7 +2,6 @@
 process manta {
 	debug false
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
-	container "${params.mulled__container}"
 
 	input:
 	tuple val(sampleID), file(bam), file(bai)
@@ -62,7 +61,6 @@ process manta {
 process rehead_manta {
 	debug false 
 	publishDir "${params.outDir}/${sampleID}/manta", mode: 'copy'
-	container "${params.bcftools__container}"
 
 	input:
 	tuple val(sampleID), path(manta_diploid_convert)

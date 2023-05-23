@@ -3,9 +3,6 @@ process tiddit_cov {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
 	
-    // Run with container
-	container "${params.tiddit__container}"
-	
 	input:
 	tuple val(sampleID), file(bam), file(bai)
 	path(ref)
