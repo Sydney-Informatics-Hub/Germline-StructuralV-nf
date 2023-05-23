@@ -149,17 +149,15 @@
         "whoami": {
           "type": "string",
           "default": "false",
-          "description": "User ID for HPC"
+          "description": "User ID for HPC account"
         },
-        "slurm_project": {
+        "pbs_account": {
           "type": "string",
-          "default": "false",
-          "description": "Project code for Pawsey Setonix HPC"
+          "default": "false"
         },
-        "pbs_project": {
+        "slurm_account": {
           "type": "string",
-          "default": "false",
-          "description": "Project code for NCI Gadi HPC"
+          "default": "false"
         }
       },
       "fa_icon": "fas fa-laptop-code"
@@ -184,5 +182,15 @@
     {
       "$ref": "#/definitions/hpc_account_details"
     }
-  ]
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "default": 1
+    },
+    "help": {
+      "type": "string",
+      "default": "false"
+    }
+  }
 }
