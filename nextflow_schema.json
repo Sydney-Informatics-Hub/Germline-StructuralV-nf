@@ -15,10 +15,9 @@
         "input": {
           "type": "string",
           "format": "file-path",
-          "schema": "assets/schema_input.json",
-          "description": "Path to tab-separated file containing information about the samples in the experiment.",
-          "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
-          "fa_icon": "fas fa-file-csv"
+          "mimetype": "text/csv",
+          "description": "Path to tsv file containing information about the samples in the experiment.",
+          "fa_icon": "fas fa-file-tsv"
         },
         "outDir": {
           "type": "string",
@@ -57,15 +56,15 @@
       "description": "Settings for annotating VCFs with AnnotSV",
       "default": "",
       "properties": {
-        "annotsvMode": {
-          "type": "string",
-          "default": "both",
-          "description": "Specify full, split, or both for AnnotSV output mode"
-        },
         "annotsvDir": {
           "type": "string",
           "description": "Full path to the directory housing the prepared Annotations_human directory for AnnotSV",
           "default": "null"
+        },
+        "annotsvMode": {
+          "type": "string",
+          "default": "both",
+          "description": "Specify full, split, or both for AnnotSV output mode"
         }
       }
     },
