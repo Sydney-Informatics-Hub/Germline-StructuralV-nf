@@ -15,7 +15,7 @@
         "input": {
           "type": "string",
           "format": "file-path",
-          "mimetype": "text/csv",
+          "mimetype": "text/tsv",
           "description": "Path to tsv file containing information about the samples in the experiment.",
           "fa_icon": "fas fa-file-tsv"
         },
