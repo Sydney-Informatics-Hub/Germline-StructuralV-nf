@@ -25,9 +25,9 @@ Created by the Sydney Informatics Hub, University of Sydney
 
 Documentation	@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf
 
-Cite		@ TODO:INSERT DOI
+Cite			@ 10.48546/workflowhub.workflow.431.1
 
-Log issues	@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues
+Log issues		@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues
 
 ===================================================================
 Workflow run parameters 
