@@ -150,11 +150,11 @@
           "default": "false",
           "description": "User ID for HPC account"
         },
-        "pbs_account": {
+        "gadi_account": {
           "type": "string",
           "default": "false"
         },
-        "slurm_account": {
+        "setonix_account": {
           "type": "string",
           "default": "false"
         }
@@ -181,15 +181,5 @@
     {
       "$ref": "#/definitions/hpc_account_details"
     }
-  ],
-  "properties": {
-    "version": {
-      "type": "integer",
-      "default": 1
-    },
-    "help": {
-      "type": "string",
-      "default": "false"
-    }
+  ]
   }
-}
