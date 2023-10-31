@@ -271,7 +271,7 @@ Coming soon!
 |Source             | NA                                |
 |License            | GNU General Public License v3.0   |
 |Workflow manager   | NextFlow                          |
-|Container          | See Component tools               |
+|Container          | See component tools               |
 |Install method     | NA                                |
 |GitHub             | https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf                            |
 |bio.tools          | NA                                |
@@ -314,7 +314,7 @@ samtools idxstats input.bam | cut -f 1
 - Sarah Beecroft (Pawsey Supercomputing Research Centre)
 
 ### Acknowledgements
-- This pipeline was devloped and tested using data provided by the Northcott Neuroscience Laboratory, ANZAC Research Institute and resources provided by the Australian BioCommons 'Bring Your Own Data' platforms project and the Pawsey Supercomputing Research Centre.
+- This pipeline was developed and tested using data provided by the Northcott Neuroscience Laboratory, ANZAC Research Institute and resources provided by the Australian BioCommons 'Bring Your Own Data' platforms project and the Pawsey Supercomputing Research Centre.
 - This pipeline was built using the [Nextflow DSL2 template](https://github.com/Sydney-Informatics-Hub/Nextflow_DSL2_template).
 - Documentation was created following the [Australian BioCommons documentation guidelines](https://github.com/AustralianBioCommons/doc_guidelines).
 
