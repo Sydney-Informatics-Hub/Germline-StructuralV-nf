@@ -32,5 +32,5 @@ export NXF_SINGULARITY_CACHEDIR=/scratch/$PROJECT/$(whoami)/singularity
 nextflow run main.nf \
 	--input ${samples} -profile gadi \
 	--ref ${ref} --annotsvDir ${annotsvDir} --annotsvMode ${annotsvMode} \
-	--whoami $(whoami) --pbs_account $PROJECT \
+	--whoami $(whoami) --gadi_account $PROJECT \
 	--outDir ${outDir}
