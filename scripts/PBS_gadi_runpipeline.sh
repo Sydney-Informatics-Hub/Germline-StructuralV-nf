@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#PBS -P
-#PBS -N
+#PBS -P 
+#PBS -N 
 #PBS -l walltime=48:00:00
 #PBS -l ncpus=1
 #PBS -l mem=190GB
 #PBS -W umask=022
-#PBS -q normal
+#PBS -q copyq
 #PBS -e germlineStructuralV-nf.e
 #PBS -o germlineStructuralV-nf.o
 #PBS -l wd
@@ -15,8 +15,9 @@
 #Load singularity and nextflow modules
 # See: https://opus.nci.org.au/display/DAE/Nextflow
 # See: https://opus.nci.org.au/display/Help/Singularity
-module load singularity
+module load java
 module load nextflow
+module load singularity
 
 # Fill in these variables for your run
 ref= #full path to your reference.fasta
