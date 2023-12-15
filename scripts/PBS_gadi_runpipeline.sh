@@ -2,9 +2,9 @@
 
 #PBS -P 
 #PBS -N 
-#PBS -l walltime=48:00:00
+#PBS -l walltime=10:00:00
 #PBS -l ncpus=1
-#PBS -l mem=190GB
+#PBS -l mem=80GB
 #PBS -W umask=022
 #PBS -q copyq
 #PBS -e germlineStructuralV-nf.e
