@@ -258,7 +258,9 @@ This config currently submits all tasks apart from the rehead processes to the w
 
 ## Benchmarking
 
-Coming soon!
+These resource request recommendations are based on benchmarking performed using 60x human genomes sequenced to a depth of ~30x coverage. All computation was performed on NCI Gadi HPC, running Centos 8, PBS Pro v. 19, on Intel Xeon Cascade Lake 2 x 24 core nodes each with 192 GB RAM on the normal queue.
+
+Nextflow trace, timeline, and workflow reports for this execution are available in the `benchmark` folder in this repository. Elapsed time to process 60 samples was 2hrs 36 mins, costing 2,355.86 service units (SU) in total (~39.26 SUs/sample).
 
 ## Workflow summaries
 ### Metadata
