@@ -1,9 +1,5 @@
 # GermlineStructuralV-nf
 
-<p align="center">
-:wrench: This pipeline is currently under development :wrench:
-</p>
-
   - [Description](#description)
   - [Diagram](#diagram)
   - [User guide](#user-guide)
@@ -260,16 +256,16 @@ This config currently submits all tasks apart from the rehead processes to the w
 
 These resource request recommendations are based on benchmarking performed using 60x human genomes sequenced to a depth of ~30x coverage. All computation was performed on NCI Gadi HPC, running Centos 8, PBS Pro v. 19, on Intel Xeon Cascade Lake 2 x 24 core nodes each with 192 GB RAM on the normal queue.
 
-Nextflow trace, timeline, and workflow reports for this execution are available in the `benchmark` folder in this repository. Elapsed time to process 60 samples was 2hrs 36 mins, costing 2,355.86 service units (SU) in total (~39.26 SUs/sample).
+Nextflow trace, timeline, and workflow reports for this execution are available in the `benchmark` folder in this repository. Elapsed processing time for 60 samples was 2hrs 36 mins, costing 2,355.86 service units (SU) in total (~39.26 SUs/sample).
 
 ## Workflow summaries
 ### Metadata
 
 |metadata field     | GermlineStructuralV-nf / v1.0     |
 |-------------------|:--------------------------------- |
-|Version            | 1.0                               |
-|Maturity           | under development                 |
-|Creators           | Georgie Samaha                    |
+|Version            | 1.0.0                             |
+|Maturity           | First release                     |
+|Creators           | Georgie Samaha, Tracy Chew, Marina Kennerson, Sarah Beecroft  |
 |Source             | NA                                |
 |License            | GNU General Public License v3.0   |
 |Workflow manager   | NextFlow                          |
@@ -309,11 +305,12 @@ samtools idxstats input.bam | cut -f 1
 ```
 
 ## Acknowledgements/citations/credits
-### Authors
+### Contributors
 - Georgie Samaha (Sydney Informatics Hub, University of Sydney)
 - Tracy Chew (Sydney Informatics Hub, University of Sydney)
 - Marina Kennerson (ANZAC Research Institute)
 - Sarah Beecroft (Pawsey Supercomputing Research Centre)
+- Ching-Yu Lu (Sydney Informatics Hub, University of Sydney)
 
 ### Acknowledgements
 - This pipeline was developed and tested using data provided by the Northcott Neuroscience Laboratory, ANZAC Research Institute and resources provided by the Australian BioCommons 'Bring Your Own Data' platforms project and the Pawsey Supercomputing Research Centre.
@@ -321,6 +318,12 @@ samtools idxstats input.bam | cut -f 1
 - Documentation was created following the [Australian BioCommons documentation guidelines](https://github.com/AustralianBioCommons/doc_guidelines).
 
 ### Cite us to support us!
+
+Our workflows are registered on [WorkflowHub](https://workflowhub.eu/projects/43#workflows) and this workflow can be cited in your publication:
+```
+Samaha, G., Chew, T., Kennerson, M., Beecroft, S. (2023). GermlineStructuralV-nf. WorkflowHub. https://doi.org/10.48546/WORKFLOWHUB.WORKFLOW.431.1
+```
+
 Acknowledgements (and co-authorship, where appropriate) are an important way for us to demonstrate the value we bring to your research. Your research outcomes are vital for ongoing funding of the Sydney Informatics Hub and national compute facilities. We suggest including the following acknowledgement in any publications that follow from this work:
 
 The authors acknowledge the technical assistance provided by the Sydney Informatics Hub, a Core Research Facility of the University of Sydney and the Australian BioCommons which is enabled by NCRIS via Bioplatforms Australia.
