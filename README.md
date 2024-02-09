@@ -237,11 +237,11 @@ This script will collect resources from the PBS log files printed to each task's
 
 ### Pawsey Setonix HPC
 
-Before running the pipeline you will need to load Nextflow and Singularity, both of which are globally installed modules on Setonix. You can do this by running the commands below:
+Before running the pipeline you will need to load Nextflow and Singularity, both of which are globally installed modules on Setonix. You can do this by running the commands below. Please note that the specific versions of Nextflow and Singularity will change over time, so check the correct version before running your job.
 
 ```
-module purge
-module load nextflow singularity
+module load nextflow/23.10.0
+module load singularity/3.11.4-slurm
 ```
 
 To execute this workflow on Pawsey Setonix HPC, you will need to specify the following flags to the default run command:
@@ -250,7 +250,7 @@ To execute this workflow on Pawsey Setonix HPC, you will need to specify the fol
 nextflow run main.nf --input sample.tsv --ref /path/to/ref --setonix-account <account> --whoami <username> -profile setonix
 ```
 
-This config currently submits all tasks apart from the rehead processes to the work queue. This config uses the `--setonix-account` flag to assign a project code to all task job submissions for billing purposes.
+This config currently submits all tasks apart from the rehead processes to the work queue. This config uses the `--setonix-account` flag to assign a project code to all task job submissions for billing purposes. The Singularity module version is hard coded in the profile file. If that version is out of date, you can update it by editing the `Germline-StructuralV-nf/config/setonix.config` file on Setonix.
 
 ## Benchmarking
 
