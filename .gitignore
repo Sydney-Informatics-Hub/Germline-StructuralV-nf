@@ -1,7 +1,7 @@
 .nextflow.*
 .nextflow/
 work/
-*.tsv
+*.csv
 runInfo/
 results/
 .vscode
