@@ -127,7 +127,7 @@ if ( params.help == true || params.ref == false || params.input == false ){
 
 	// Split cohort file to collect info for each sample
 	input = checkInputs.out
-		.splitCsv(header: true, sep:"\t")
+		.splitCsv(header: true)
 		.map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
 
 	// Call SVs with Manta
