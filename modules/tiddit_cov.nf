@@ -1,15 +1,15 @@
 // calculate coverage of bam files with tiddit cov
 process tiddit_cov {
 	debug false
-	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
+	publishDir "${params.outDir}/${sample}/tiddit", mode: 'copy'
 	
 	input:
-	tuple val(sampleID), file(bam), file(bai)
+	tuple val(sample), file(bam), file(bai)
 	path(ref)
 	path(ref_fai)
 
 	output:
-	tuple val(sampleID), path("*.bed")
+	tuple val(sample), path("*.bed")
 	
 	script:
 	def extraArgs = params.extraTidditCovFlags ?: ''
@@ -18,7 +18,7 @@ process tiddit_cov {
 		--cov \
 		--bam ${bam} \
 		--ref ${params.ref} \
-		-o ${sampleID}_cov  ${extraArgs}
+		-o ${sample}_cov  ${extraArgs}
 	"""
 
 }

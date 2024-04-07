@@ -1,15 +1,16 @@
 // run annotSV for variant annotation (human, mouse only)
 process annotsv {
+	tag "ANNOTATIONS: ${params.annotSV}" 
 	debug false
-	publishDir "${params.outDir}/${sampleID}/annotsv", mode: 'copy'
+	publishDir "${params.outDir}/${sample}/annotsv", mode: 'copy'
 
 	input:
-	tuple val(sampleID), path(mergedVCF)
+	tuple val(sample), path(mergedVCF)
 	path annotsvDir
 	val annotsvMode
 
 	output:
-	tuple val(sampleID), path("*_AnnotSV")
+	tuple val(sample), path("*_AnnotSV")
 
 	script: 
 	// Apply annotation mode flag to command
@@ -18,11 +19,11 @@ process annotsv {
 	// Change output file name based on annotation mode
 	def outputFile = null
 	    if (mode == 'full') {
-               outputFile = "${sampleID}_full_AnnotSV.tsv"
+               outputFile = "${sample}_full_AnnotSV.tsv"
             } else if (mode == 'split') {
-               outputFile = "${sampleID}_split_AnnotSV.tsv"
+               outputFile = "${sample}_split_AnnotSV.tsv"
             } else if (mode == 'both') {
-               outputFile = "${sampleID}_both_AnnotSV.tsv"
+               outputFile = "${sample}_both_AnnotSV.tsv"
             } else {
                throw new RuntimeException("Invalid option for --annotSV: ${mode}")}
 	
@@ -30,7 +31,7 @@ process annotsv {
 	def extraArgs = params.extraAnnotsvFlags ?: ''
 	"""
 	AnnotSV \
-		-SVinputFile ${sampleID}_merged.vcf \
+		-SVinputFile ${sample}_merged.vcf \
 		-annotationsDir ${params.annotsvDir} \
 		-bedtools bedtools -bcftools bcftools \
 		-annotationMode ${mode} \
