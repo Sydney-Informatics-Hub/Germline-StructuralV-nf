@@ -1,5 +1,6 @@
 // calculate coverage of bam files with tiddit cov
 process tiddit_cov {
+	tag "SAMPLE: ${params.sample}"
 	debug false
 	publishDir "${params.outDir}/${sample}/tiddit", mode: 'copy'
 	

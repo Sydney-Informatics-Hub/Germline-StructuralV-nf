@@ -1,5 +1,6 @@
 // generate summary counts for merged VCF
 process survivor_summary {
+	tag "SAMPLE: ${params.sample}"
 	debug false
 	publishDir "${params.outDir}/${sample}/survivor", mode: 'copy'
 

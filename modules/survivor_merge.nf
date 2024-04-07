@@ -1,5 +1,6 @@
 // Merge manta, smoove, tiddit vcfs 
 process survivor_merge {
+	tag "SAMPLE: ${params.sample}"
 	debug false
 	publishDir "${params.outDir}/${sample}/survivor", mode: 'copy'
 		

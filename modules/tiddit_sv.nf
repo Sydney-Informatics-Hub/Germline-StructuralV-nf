@@ -1,5 +1,6 @@
 // run tiddit structural variant detection
 process tiddit_sv {
+	tag "SAMPLE: ${params.sample}"
 	debug false
 	publishDir "${params.outDir}/${sample}/tiddit", mode: 'copy'
 
@@ -36,6 +37,7 @@ process tiddit_sv {
 
 // rehead tiddit SV vcf for merging 
 process rehead_tiddit {
+	tag "SAMPLE: ${params.sample}"
 	debug false 
 	publishDir "${params.outDir}/${sample}/tiddit", mode: 'copy'
 	container "${params.bcftools__container}"

@@ -1,5 +1,6 @@
 // run manta structural variant detection and convert inversions
 process manta {
+	tag "SAMPLE: ${params.sample}"
 	debug false
 	publishDir "${params.outDir}/${sample}", mode: 'copy'
 
@@ -59,6 +60,7 @@ process manta {
 
 // rehead manta SV vcf for merging 
 process rehead_manta {
+	tag "SAMPLE: ${params.sample}"
 	debug false 
 	publishDir "${params.outDir}/${sample}/manta", mode: 'copy'
 

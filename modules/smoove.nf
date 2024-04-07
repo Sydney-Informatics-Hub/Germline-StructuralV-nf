@@ -1,5 +1,6 @@
 // run smoove structural variant detection
 process smoove {
+	tag "SAMPLE: ${params.sample}"
 	debug false
 	publishDir "${params.outDir}/${sample}", mode: 'copy'
 
@@ -30,6 +31,7 @@ process smoove {
 
 // rehead smoove genotyped vcf for merging 
 process rehead_smoove {
+	tag "SAMPLE: ${params.sample}"
 	debug false 
 	publishDir "${params.outDir}/${sample}/smoove", mode: 'copy'
 
