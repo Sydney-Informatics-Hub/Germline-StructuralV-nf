@@ -46,12 +46,13 @@ To run this pipeline you will need the following inputs:
 
 This pipeline processes paired-end BAM files and is capable of processing multiple samples in parallel. BAM files are expected to be coordinate sorted and indexed (see [Fastq-to-BAM](https://github.com/Sydney-Informatics-Hub/Fastq-to-BAM) for an example of a best practice workflow that can generate these files).
 
-You will need to create a sample sheet with information about the samples you are processing, before running the pipeline. This file must be **tab-separated** and contain a header and one row per sample. Columns should correspond to sampleID, BAM file, BAI file:
+You will need to create a sample sheet with information about the samples you are processing, before running the pipeline. This file must be **comma-separated** and contain a header and one row per sample. Columns should correspond to sample ID, BAM file, BAM index (BAI) file:
 
-|sampleID|bam                   |bai                       |
-|--------|----------------------|--------------------------|
-|SAMPLE1 |/data/Bams/sample1.bam|/data/Bams/sample1.bam.bai|
-|SAMPLE2 |/data/Bams/sample2.bam|/data/Bams/sample2.bam.bai|
+```bash
+sample,bam,bai
+sample1,/path/to/sample1.bam,/path/to/sample1.bam.bai
+sample2,/path/to/sample2.bam,/path/to/sample2.bam.bai
+```
 
 When you run the pipeline, you will use the mandatory `--input` parameter to specify the location and name of the input file:
 
@@ -261,10 +262,9 @@ Nextflow trace, timeline, and workflow reports for this execution are available 
 ## Workflow summaries
 ### Metadata
 
-|metadata field     | GermlineStructuralV-nf / v1.0     |
+|metadata field     | GermlineStructuralV-nf / v1.1.0   |
 |-------------------|:--------------------------------- |
-|Version            | 1.0.0                             |
-|Maturity           | First release                     |
+|Version            | 1.1.0                             |
 |Creators           | Georgie Samaha, Tracy Chew, Marina Kennerson, Sarah Beecroft  |
 |Source             | NA                                |
 |License            | GNU General Public License v3.0   |
@@ -304,6 +304,12 @@ To run this pipeline you must have Nextflow and Singularity installed on your ma
 samtools idxstats input.bam | cut -f 1
 ```
 
+Submit an issue to get in contact with us regarding:
+
+* [Unexpected performance/bugs in the code](https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml)
+* [Requesting a new feature](https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.yml)
+* [General troubleshooting](https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues/new)
+
 ## Acknowledgements/citations/credits
 ### Contributors
 - Georgie Samaha (Sydney Informatics Hub, University of Sydney)
@@ -311,6 +317,7 @@ samtools idxstats input.bam | cut -f 1
 - Marina Kennerson (ANZAC Research Institute)
 - Sarah Beecroft (Pawsey Supercomputing Research Centre)
 - Ching-Yu Lu (Sydney Informatics Hub, University of Sydney)
+- Cali Willet (Sydney Informatics Hub, University of Sydney)
 
 ### Acknowledgements
 - This pipeline was developed and tested using data provided by the Northcott Neuroscience Laboratory, ANZAC Research Institute and resources provided by the Australian BioCommons 'Bring Your Own Data' platforms project and the Pawsey Supercomputing Research Centre.
