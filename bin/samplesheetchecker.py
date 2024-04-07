@@ -41,8 +41,7 @@ def modify_samplesheet(samplesheet_path):
 
         rows = []
         for row in reader:
-            bam = row[1]
-            bai = row[2]
+            rows.append(row)
 
     with open(output_csv, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)

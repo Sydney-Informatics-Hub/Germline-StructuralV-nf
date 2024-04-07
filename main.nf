@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // Import subworkflows to be run in the workflow
-include { checkInputs       }   from './modules/check_cohort'
+include { check_input       }   from './modules/check_input'
 include { smoove            }   from './modules/smoove'
 include { rehead_smoove     }   from './modules/smoove'
 include { manta             }   from './modules/manta'
@@ -24,9 +24,7 @@ G E R M L I N E  S T R U C T U R A L  V - N F
 Created by the Sydney Informatics Hub, University of Sydney
 
 Documentation	@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf
-
 Cite					@ 10.48546/workflowhub.workflow.431.1
-
 Log issues		@ https://github.com/Sydney-Informatics-Hub/Germline-StructuralV-nf/issues
 
 ===================================================================
@@ -115,75 +113,55 @@ HPC accounting arguments:
 
 workflow {
 
-if ( params.help == true || params.ref == false || params.input == false ){
+if (params.help == true ){ //|| params.ref == false || params.input == false 
 	// Invoke the help function above and exit
 	helpMessage()
 	exit 1
 
 	} else {
 
-	// Check inputs file exists
-	checkInputs(Channel.fromPath(params.input, checkIfExists: true))
+	// VALIDATE INPUTS 
+	check_input(Channel.fromPath(params.input, checkIfExists: true))
 
 	// Split cohort file to collect info for each sample
-	input = checkInputs.out
+	input = check_input.out.samplesheet
 		.splitCsv(header: true)
-		.map { row -> tuple(row.sampleID, file(row.bam), file(row.bai))}
-
-	// Call SVs with Manta
-	manta(input, params.ref, params.ref+'.fai')
-
-	// Rehead manta vcf for merging
-	rehead_manta(manta.out.manta_diploid_convert, manta.out.manta_diploid_convert_tbi)
-
-	// Call SVs with Smoove
-	smoove(input, params.ref, params.ref+'.fai')
-
-	// Rehead smoove vcf for merging
-	rehead_smoove(smoove.out.smoove_geno)
-
-	// Run TIDDIT sv
-	tiddit_sv(input, params.ref, params.ref+'.fai')
-
-	// Rehead TIDDIT vcf for merging
-	rehead_tiddit(tiddit_sv.out.tiddit_vcf)
-
-	// Run TIDDIT cov
-	tiddit_cov(input, params.ref, params.ref+'.fai')
-
-	// Collect VCFs for merging
-	mergeFile = rehead_tiddit.out.tiddit_VCF
-		.concat(rehead_smoove.out.smoove_VCF, rehead_manta.out.manta_VCF)
-		.groupTuple()
-
-	// Run SURVIVOR merge
-	survivor_merge(mergeFile)
-
-	// Run SURVIVOR summary
-	survivor_summary(survivor_merge.out.mergedVCF)
-
-	// Run AnnotSV (optional)
-	if (params.annotsvDir) {
-		annotsv(survivor_merge.out.mergedVCF, params.annotsvDir, params.annotsvMode)}
+		.map { row -> tuple(row.sample, file(row.bam), file(row.bai))}
 	}}
+	// CALL STRUCTURAL VARIANTS WITH MANTA
+	//manta(input, params.ref, params.ref+'.fai')
 
-workflow.onComplete {
+	// REHEAD MANTA VCF FOR MERGING 
+	//rehead_manta(manta.out.manta_diploid_convert, manta.out.manta_diploid_convert_tbi)
 
-summary = """
-===================================================================
-Workflow execution summary
-===================================================================
+	// CALL STRUCTURAL VARIANTS WITH SMOOVE
+	//smoove(input, params.ref, params.ref+'.fai')
 
-Duration		: ${workflow.duration}
-Success			: ${workflow.success}
-workDir			: ${workflow.workDir}
-Exit status	: ${workflow.exitStatus}
-outDir			: ${params.outDir}
+	// REHEAD SMOOVE VCF FOR MERGING 
+	//rehead_smoove(smoove.out.smoove_geno)
 
-===================================================================
+	// CALL STRUCTURAL VARIANTS WITH TIDDIT
+	//tiddit_sv(input, params.ref, params.ref+'.fai')
 
-"""
+	// REHEAD TIDDIT VCF FOR MERGING 
+	//rehead_tiddit(tiddit_sv.out.tiddit_vcf)
 
-println summary
+	// PROFILE GENOME COVERAGE WITH TIDDIT 
+	//tiddit_cov(input, params.ref, params.ref+'.fai')
 
-}
+	// COLLECT SV VCFS FOR MERGING AT THE SAMPLE LEVEL
+	//mergeFile = rehead_tiddit.out.tiddit_VCF
+	//	.concat(rehead_smoove.out.smoove_VCF, rehead_manta.out.manta_VCF)
+	//	.groupTuple()
+
+	// MERGE VCFS AT THE SAMPLE LEVEL WITH SURVIVOR
+	//survivor_merge(mergeFile)
+
+	// SUMMARISE SV RESULTS WITH SURVIVOR
+	//survivor_summary(survivor_merge.out.mergedVCF)
+
+	// ANNOTATE VCF WITH ANNOTSV
+	//if (params.annotsvDir) {
+	//	annotsv(survivor_merge.out.mergedVCF, params.annotsvDir, params.annotsvMode)}
+	//}}
+
