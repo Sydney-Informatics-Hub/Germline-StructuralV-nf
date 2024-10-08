@@ -34,7 +34,7 @@ process annotsv {
 		-annotationsDir ${params.annotsvDir} \
 		-bedtools bedtools -bcftools bcftools \
 		-annotationMode ${mode} \
-		-genomeBuild GRCh38 \
+		-genomeBuild ${params.genomeBuild} \
 		-includeCI 1 \
 		-overwrite 1 \
 		-outputFile ${outputFile} ${extraArgs}

@@ -90,6 +90,8 @@ Optional Arguments:
 	--survivorSize		    Minimum size (bp) event to report (default 40bp).
 
 	--annotsvDir		    Full path to the directory housing the prepared AnnotSV directory.
+	
+	--genomeBuild		    Genome version from annotsvDir downloaded files (default: GRCh37).
 
 	--annotsvMode		    Specify full, split, or both for AnnotSV output mode (default: both).
 
