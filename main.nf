@@ -43,6 +43,7 @@ Workflow run parameters
  strand agreement : ${params.survivorStrand}
  minMerge size    : ${params.survivorSize}
  annotsvDir       : ${params.annotsvDir}
+ genomeBuild      : ${params.genomeBuild}
  annotsvMode      : ${params.annotsvMode}
  outDir           : ${params.outDir}
  workDir          : ${workflow.workDir}
