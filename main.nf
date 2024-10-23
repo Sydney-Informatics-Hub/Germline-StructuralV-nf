@@ -43,6 +43,7 @@ Workflow run parameters
  strand agreement : ${params.survivorStrand}
  minMerge size    : ${params.survivorSize}
  annotsvDir       : ${params.annotsvDir}
+ genomeBuild      : ${params.genomeBuild}
  annotsvMode      : ${params.annotsvMode}
  outDir           : ${params.outDir}
  workDir          : ${workflow.workDir}
@@ -90,6 +91,8 @@ Optional Arguments:
 	--survivorSize		    Minimum size (bp) event to report (default 40bp).
 
 	--annotsvDir		    Full path to the directory housing the prepared AnnotSV directory.
+	
+	--genomeBuild		    Genome version from annotsvDir downloaded files (default: GRCh37).
 
 	--annotsvMode		    Specify full, split, or both for AnnotSV output mode (default: both).
 
