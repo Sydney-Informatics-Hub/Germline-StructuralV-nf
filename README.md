@@ -206,7 +206,7 @@ This pipeline has been successfully implemented on NCI Gadi and Pawsey Setonix H
 
 * `--whoami` your NCI or Pawsey user name
 * `--setonix_account` the Setonix project account you would like to bill service units to
-* `--gadi-account` the Gadi project account you would like to bill service units to
+* `--gadi_account` the Gadi project account you would like to bill service units to
 
 ### NCI Gadi HPC
 
@@ -220,12 +220,12 @@ module load nextflow singularity
 To execute this workflow on NCI Gadi HPC, you will need to specify the following flags to the default run command:
 
 ```
-nextflow run main.nf --input sample.tsv --ref /path/to/ref --gadi-account <account> --whoami <username> -profile gadi
+nextflow run main.nf --input sample.tsv --ref /path/to/ref --gadi_account <account> --whoami <username> -profile gadi
 ```
 
 Please be aware that as of October 2023, NCI Gadi HPC queues do not have external network access. This means you will not be able to pull the workflow code base or containers if you submit your nextflow run command as a job on any of the standard job queues. NCI currently recommends you run your Nextflow head job either in a GNU screen or tmux session from the login node or submit it as a job to the copyq.
 
-The NCI Gadi config currently runs all tasks apart from the rehead processes on the normal queue. This config uses the `--gadi-account` flag to assign a project code to all task job submissions for billing purposes. The version of Nextflow installed on Gadi has been modified to make it easier to specify resource options for jobs submitted to the cluster. See NCI's [Gadi user guide](https://opus.nci.org.au/display/DAE/Nextflow) for more details.
+The NCI Gadi config currently runs all tasks apart from the rehead processes on the normal queue. This config uses the `--gadi_account` flag to assign a project code to all task job submissions for billing purposes. The version of Nextflow installed on Gadi has been modified to make it easier to specify resource options for jobs submitted to the cluster. See NCI's [Gadi user guide](https://opus.nci.org.au/display/DAE/Nextflow) for more details.
 
 The NCI Gadi config summarises resource usage in a custom trace file that will be saved to your specified results directory. However, for accounting or resource benchmarking purposes you may need to collect per-task service unit (SU) charges. Upon workflow completion, you can run the Sydney Informatics Hub's gadi_nfcore_report.sh script in your workflow execution directory with:
 
