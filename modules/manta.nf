@@ -47,8 +47,9 @@ process manta {
 	mv manta/results/variants/diploidSV.vcf.gz.tbi \
 		manta/Manta_${sampleID}.diploidSV.vcf.gz.tbi
 	
-	# convert multiline inversion BNDs from manta vcf to single line
-	convertInversion.py \$(which samtools) ${params.ref} \
+	# Use patched script to parse contigs correctly e.g. HLA-DQB1*06:01:01:88
+	# See comment in scripts/convertInversion_patched.py
+	python2 ${projectDir}/scripts/convertInversion_patched.py \$(which samtools) ${params.ref} \
 		manta/Manta_${sampleID}.diploidSV.vcf.gz \
 		> manta/Manta_${sampleID}.diploidSV_converted.vcf
 
