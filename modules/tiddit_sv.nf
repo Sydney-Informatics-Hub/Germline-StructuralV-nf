@@ -2,6 +2,7 @@
 process tiddit_sv {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
+	container 'quay.io/biocontainers/tiddit:3.6.0--py310hc2b7f4b_0'
 
 	input:
 	tuple val(sampleID), file(bam), file(bai)
@@ -38,7 +39,7 @@ process tiddit_sv {
 process rehead_tiddit {
 	debug false 
 	publishDir "${params.outDir}/${sampleID}/tiddit", mode: 'copy'
-	container "${params.bcftools__container}"
+	container 'quay.io/biocontainers/bcftools:1.15.1--hfe4b78e_1'
 
 	input:
 	tuple val(sampleID), path(tiddit_vcf)

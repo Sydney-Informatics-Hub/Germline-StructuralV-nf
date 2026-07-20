@@ -2,6 +2,7 @@
 process annotsv {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/annotsv", mode: 'copy'
+	container 'quay.io/biocontainers/annotsv:3.5.10--hdfd78af_0'
 
 	input:
 	tuple val(sampleID), path(mergedVCF)

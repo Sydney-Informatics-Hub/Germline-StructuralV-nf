@@ -2,6 +2,7 @@
 process manta {
 	debug false
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
+	container 'quay.io/biocontainers/mulled-v2-40295ae41112676b05b649e513fe7000675e9b84:0b4be2c719f99f44df34be7b447b287bb7f86e01-0'
 
 	input:
 	tuple val(sampleID), file(bam), file(bai)
@@ -59,8 +60,9 @@ process manta {
 
 // rehead manta SV vcf for merging 
 process rehead_manta {
-	debug false 
+	debug false
 	publishDir "${params.outDir}/${sampleID}/manta", mode: 'copy'
+	container 'quay.io/biocontainers/bcftools:1.15.1--hfe4b78e_1'
 
 	input:
 	tuple val(sampleID), path(manta_diploid_convert)
