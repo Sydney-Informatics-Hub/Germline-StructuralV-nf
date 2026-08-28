@@ -2,6 +2,7 @@
 process smoove {
 	debug false
 	publishDir "${params.outDir}/${sampleID}", mode: 'copy'
+	container 'brentp/smoove:v0.2.7'
 
 	input:
 	tuple val(sampleID), file(bam), file(bai)
@@ -30,8 +31,9 @@ process smoove {
 
 // rehead smoove genotyped vcf for merging 
 process rehead_smoove {
-	debug false 
+	debug false
 	publishDir "${params.outDir}/${sampleID}/smoove", mode: 'copy'
+	container 'quay.io/biocontainers/bcftools:1.15.1--hfe4b78e_1'
 
 	input:
 	tuple val(sampleID), path(smoove_geno)

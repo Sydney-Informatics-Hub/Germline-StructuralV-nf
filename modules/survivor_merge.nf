@@ -2,6 +2,7 @@
 process survivor_merge {
 	debug false
 	publishDir "${params.outDir}/${sampleID}/survivor", mode: 'copy'
+	container 'quay.io/biocontainers/survivor:1.0.7--hd03093a_2'
 		
 	input:
 	//tuple val(sampleID), path(mergelist)

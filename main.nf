@@ -92,7 +92,7 @@ Optional Arguments:
 
 	--annotsvDir		    Full path to the directory housing the prepared AnnotSV directory.
 	
-	--genomeBuild		    Genome version from annotsvDir downloaded files (default: GRCh37).
+	--genomeBuild		    Genome version from annotsvDir downloaded files, GRCh37 or GRCh38 (default: GRCh38).
 
 	--annotsvMode		    Specify full, split, or both for AnnotSV output mode (default: both).
 
@@ -111,6 +111,8 @@ HPC accounting arguments:
         --whoami                    HPC user name (Setonix or Gadi HPC)
 
         --gadi_account              Project accounting code for NCI Gadi (e.g. aa00)
+
+        --storage_account           NCI Gadi PBS storage mounts for tasks (e.g. 'scratch/aa00+gdata/if89'), needed when the reference or AnnotSV data live under another project
 
         --setonix_account           Project accounting code for Pawsey Setonix (e.g. name1234)
 """.stripIndent()
