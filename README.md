@@ -263,7 +263,7 @@ Nextflow trace, timeline, and workflow reports for this execution are available 
 
 |metadata field     | GermlineStructuralV-nf / v1.0     |
 |-------------------|:--------------------------------- |
-|Version            | 1.0.0                             |
+|Version            | 2.0.0                             |
 |Maturity           | First release                     |
 |Creators           | Georgie Samaha, Tracy Chew, Marina Kennerson, Sarah Beecroft  |
 |Source             | NA                                |
@@ -290,7 +290,7 @@ To run this pipeline you must have Nextflow and Singularity installed on your ma
 |BCFtools     |1.15.1    |
 |HTSlib       |1.15.1    |
 |SURVIVOR     |1.0.7     |
-|AnnotSV      |3.2.1     |
+|AnnotSV      |3.5.10    |
 
 ## Additional notes
 ### Resources
@@ -311,6 +311,7 @@ samtools idxstats input.bam | cut -f 1
 - Marina Kennerson (ANZAC Research Institute)
 - Sarah Beecroft (Pawsey Supercomputing Research Centre)
 - Ching-Yu Lu (Sydney Informatics Hub, University of Sydney)
+- Frederick Jaya (Sydney Informatics Hub, University of Sydney)
 
 ### Acknowledgements
 - This pipeline was developed and tested using data provided by the Northcott Neuroscience Laboratory, ANZAC Research Institute and resources provided by the Australian BioCommons 'Bring Your Own Data' platforms project and the Pawsey Supercomputing Research Centre.
